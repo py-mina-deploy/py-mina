@@ -8,6 +8,7 @@ from fabric.api import task, settings
 from py_mina.config import configure
 from py_mina.state import state, set_state
 from py_mina.utils import print_stats
+from py_mina.decorators.launch import get_launcher
 from py_mina.exceptions import *
 from py_mina.tasks.deploy import *
 
@@ -57,6 +58,19 @@ def deploy_task(fn):
 				set_state('finallize', False)
 
 
+	def launch():
+		launcher = get_launcher()
+
+		if callable(launcher):
+			with settings(abort_exception=LaunchError):
+				try: 
+					launcher()
+
+					set_state('launch', True)
+				except LaunchError:
+					set_state('launch', False)
+		
+
 ################################################################################	
 # Decorator
 ################################################################################	
@@ -64,7 +78,13 @@ def deploy_task(fn):
 	@task
 	def deploy(*args):
 		"""
-		Invokes deploy process.
+		Invokes deploy process:
+			1) Pre deploy (lock, build path, latest_release)
+			2) Deploy
+			3) Post deploy (move to releases, link release to current)
+			4) Finallize deploy (cleanup, remove build path, unlock)
+			5) Launch application
+			6) Show deploy stats
 		"""
 
 		ensure('build_to')
@@ -84,6 +104,11 @@ def deploy_task(fn):
 			finally:
 				finallize_deploy()
 
+		# Launch application if build succeeded
+		if state.get('deploy') == True and state.get('post') == True: 
+			launch()
+
+		# Show deploy stats
 		print_stats()
 
 
