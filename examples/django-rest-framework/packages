@@ -1,0 +1,12 @@
+ipython
+pip-tools
+gunicorn
+django
+mysqlclient
+django-background-tasks
+django-seed
+django-filter
+django-cors-middleware
+djangorestframework
+djangorestframework-expiring-authtoken
+
