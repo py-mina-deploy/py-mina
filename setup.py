@@ -9,7 +9,7 @@ except IOError:
 setup(
     name="py-mina",
     version="0.0.3",
-    description="Python library for deploying applications to remote server",
+    description="Python library for deploying applications on remote server",
     license="MIT",
     author="Cidevant Von Goethe",
     author_email="cidevant@mail.ru",
