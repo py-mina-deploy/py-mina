@@ -1,2 +1,2 @@
 # py-mina
-Python library for deploying apps on remote server inspired by "mina-deploy"
+Python library for deploying applications to remote server
