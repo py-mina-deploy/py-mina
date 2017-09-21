@@ -1,15 +1,24 @@
+"""
+Decorator for setup task
+"""
+
 from fabric.api import task
 from py_mina.config import configure
+from py_mina.tasks.setup import *
 
 
 def setup_task(fn):
-	"""
-	Decorator for setup task
-	"""
+	configure()
+
 
 	@task
 	def setup(*args):
-		configure()
+		create_required()
+		create_shared()
+		add_repo_to_known_hosts()
+		add_host_to_known_hosts()
+
 		fn(*args)
+
 
 	return setup

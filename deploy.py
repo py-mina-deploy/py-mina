@@ -1,7 +1,6 @@
 from py_mina import *
 from fabric.api import run, cd
 
-
 ################################################################################
 # Shared
 ################################################################################
@@ -31,7 +30,7 @@ def deploy():
 
 @setup_task
 def setup():
-	print('setup')
+	print('deploy - setup')
 
 
 @launch_task

@@ -6,6 +6,7 @@ import os
 import time
 from fabric.api import env
 from py_mina.utils import _AttributeDict
+import py_mina.state
 from py_mina.exceptions import FetchConfigError, EnsureConfigError, BadConfigError
 
 ################################################################################
