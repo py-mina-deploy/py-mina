@@ -2,12 +2,14 @@
 Configuration manager
 """
 
+
 import os
 import time
 from fabric.api import env
 from py_mina.utils import _AttributeDict
 import py_mina.state
 from py_mina.exceptions import FetchConfigError, EnsureConfigError, BadConfigError
+
 
 ################################################################################
 # Default config
@@ -29,9 +31,10 @@ config = _AttributeDict({
 
 def configure():
 	"""
-	1) Ensures required settings is config
-	2) Creates deploy paths
-	3) Sets "fabric" config values: ["env.user", "env.hosts"]
+	Invokes configuration:
+		1) Ensures required settings is config
+		2) Creates deploy paths
+		3) Sets "fabric" config values: ["env.user", "env.hosts", "abort_on_prompts", etc]
 	"""
 
 	# ensure required

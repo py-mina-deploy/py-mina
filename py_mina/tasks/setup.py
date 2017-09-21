@@ -1,8 +1,11 @@
+"""
+Setup tasks
+"""
+
 from __future__ import with_statement
 import os
 from py_mina.config import fetch
 from fabric.api import run, settings, env, cd
-
 
 ################################################################################
 # Create required and shared 

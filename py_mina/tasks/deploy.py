@@ -1,3 +1,7 @@
+"""
+Deploy tasks
+"""
+
 from __future__ import with_statement
 import os
 from fabric.api import *

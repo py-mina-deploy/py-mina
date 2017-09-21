@@ -1,7 +1,12 @@
+"""
+Singleton decorator for setup task
+"""
+
+
 from fabric.api import task
 from py_mina.exceptions import LaunchSingletonError
 
-# Singleton
+
 __launch_function = None
 
 
@@ -18,9 +23,10 @@ def launch_task(fn):
 	if not __launch_function:
 		__launch_function = fn
 
+
 		@task
-		def launch(*args):
-			fn(*args)
+		def launch(*args): fn(*args)
+
 
 		return launch
 	else:

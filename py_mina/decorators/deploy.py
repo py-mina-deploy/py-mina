@@ -2,6 +2,7 @@
 Decorator for deploy task
 """
 
+
 from __future__ import with_statement
 from fabric.api import task, settings
 
@@ -15,6 +16,7 @@ from py_mina.tasks.deploy import *
 
 def deploy_task(fn):
 	configure()
+
 
 ################################################################################	
 # INTERNAL
@@ -74,6 +76,7 @@ def deploy_task(fn):
 ################################################################################	
 # Decorator
 ################################################################################	
+
 
 	@task
 	def deploy(*args):

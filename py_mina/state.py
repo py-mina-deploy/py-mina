@@ -1,5 +1,11 @@
+"""
+Deploy state manager
+"""
+
+
 from py_mina.utils import _AttributeDict
 from py_mina.exceptions import StateError
+
 
 state = _AttributeDict({
 	'pre': None,	

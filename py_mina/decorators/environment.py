@@ -2,10 +2,12 @@
 Loads environment before running task
 """
 
+
 def environment_task(fn):
 	def environment(*args):
 		fn(*args)
 	return environment
+
 
 def with_environment(name):
 	def wrapper(fn):

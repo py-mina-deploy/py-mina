@@ -2,6 +2,7 @@
 Decorator for setup task
 """
 
+
 from fabric.api import task
 from py_mina.config import configure
 from py_mina.tasks.setup import *
