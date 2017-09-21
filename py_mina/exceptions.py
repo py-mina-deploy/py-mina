@@ -38,7 +38,19 @@ class SetupError(Exception):
 ################################################################################
 
 
+class PreDeployError(Exception):
+	pass
+
+
 class DeployError(Exception):
+	pass
+
+
+class PostDeployError(Exception):
+	pass
+
+	
+class FinallizeDeployError(Exception):
 	pass
 
 

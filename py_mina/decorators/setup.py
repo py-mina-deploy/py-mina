@@ -13,12 +13,13 @@ def setup_task(fn):
 
 	@task
 	def setup(*args):
-		create_required()
-		create_shared()
-		add_repo_to_known_hosts()
-		add_host_to_known_hosts()
+		with settings(colorize_errors=True):
+			create_required()
+			create_shared()
+			add_repo_to_known_hosts()
+			add_host_to_known_hosts()
 
-		fn(*args)
+			fn(*args)
 
 
 	return setup

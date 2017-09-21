@@ -15,23 +15,23 @@ def create_required():
 	"""
 
 	for required_path in ['shared', 'releases', 'tmp']:
-		run('mkdir -p ' + os.path.join(fetch('deploy_to'), required_path))
+		run('mkdir -p %s' % os.path.join(fetch('deploy_to'), required_path))
 
 
 def create_shared():
 	"""
-	Creates shared folders and touches shared files
+	Creates shared_dirs and touches shared_files
 	"""
 
 	with cd(fetch('shared_path')):
 		for sdir in fetch('shared_dirs'):
 			run('mkdir -p %s' % sdir)
 
-		for spath in fetch('shared_paths'):
-			path_parent = os.path.join(*spath.split('/')[:-1])
+		for sfile in fetch('shared_files'):
+			path_parent = os.path.join(*sfile.split('/')[:-1])
 			run('mkdir -p %s' % path_parent)
-			run('touch ' + spath)
-			run('chmod g+rx,u+rwx ' + spath)
+			run('touch ' + sfile)
+			run('chmod g+rx,u+rwx ' + sfile)
 
 
 ################################################################################

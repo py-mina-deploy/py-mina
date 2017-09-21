@@ -1,35 +1,65 @@
 from __future__ import with_statement
 import os
-from fabric.api import settings, hide, run
-from py_mina.config import fetch, set
+from fabric.api import *
+from py_mina.config import *
+
 
 def git_clone():
-	git_latest_release()
-
-
-def git_latest_release():
 	"""
-	Connects to remote server and discovers next release number
+	Clones repository to tmp build dir
 	"""
 
-	releases_path = fetch('releases_path')
+	maybe_clone_git_repository()
+	fetch_new_commits()
+	use_git_branch()
 
-	# Get release number
-	with settings(hide('stdout', 'warnings'), warn_only=True):
-		if run('test -d %s' % releases_path).failed:
-			run('mkdir -p %s' % releases_path)
-			last_release_number = 0
-		else:
-			releases_respond = run('ls -1p %s | sed "s/\///g"' % releases_path)
-			releases_dirs = filter(lambda x: len(x) != 0, releases_respond.split('\r\n'))
 
-			if len(releases_dirs) > 0:
-				last_release_number = max(map(lambda x: int(x), releases_dirs)) or 0
-			else:
-				last_release_number = 0
+def maybe_clone_git_repository():
+	"""
+	Clones bare git repository on first deploy
+	"""
 
-	release_number = last_release_number + 1
+	ensure('repository')
+	ensure('scm')
 
-	# Set release info to config 
-	set('release_number', release_number)
-	set('release_to', os.path.join(releases_path, str(release_number)))
+	scm = fetch('scm')
+
+	with settings(warn_only=True):
+		if run('test -d %s' % scm).failed:
+			run('git clone {0} {1} --bare'.format(
+				fetch('repository'), scm)
+				)
+
+
+def fetch_new_commits():
+	"""
+	Fetches new git commits
+	"""
+
+	ensure('scm')
+	ensure('repository')
+	ensure('branch')
+
+	with cd(fetch('scm')):
+		run('git fetch {0} "{1}:{1}" --force'.format(
+			fetch('repository'),
+			fetch('branch'))
+			)
+
+
+def use_git_branch():
+	"""
+	Clone repository to "build_to"
+	"""
+
+	ensure('build_to')
+	ensure('scm')
+	ensure('branch')
+
+	with cd(fetch('build_to')):
+		run('git clone {0} . --recursive --branch {1}'.format(
+			fetch('scm'),
+			fetch('branch'))
+			)
+		run('rm -rf .git')
+
