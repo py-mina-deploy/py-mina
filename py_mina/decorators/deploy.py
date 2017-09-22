@@ -5,8 +5,7 @@ Decorator for deploy task
 
 from __future__ import with_statement
 from fabric.api import task, settings
-
-from py_mina.config import configure
+from py_mina.config import check_deploy_config
 from py_mina.state import state, set_state
 from py_mina.utils import print_stats
 from py_mina.decorators.launch import get_launcher
@@ -15,7 +14,7 @@ from py_mina.tasks.deploy import *
 
 
 def deploy_task(fn):
-	configure()
+	check_deploy_config()
 
 
 ################################################################################	

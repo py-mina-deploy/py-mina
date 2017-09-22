@@ -21,6 +21,7 @@ config = _AttributeDict({
 	'shared_files': [],
 	'shared_dirs': [],
 	'abort_on_prompts': False,
+	'farbric_config_settings': ['user', 'hosts', 'abort_on_prompts']
 })
 
 
@@ -29,36 +30,17 @@ config = _AttributeDict({
 ################################################################################
 
 
-def configure():
+def check_deploy_config():
 	"""
-	Invokes configuration:
-		1) Ensures required settings is config
-		2) Creates deploy paths
-		3) Sets "fabric" config values: ["env.user", "env.hosts", "abort_on_prompts", etc]
+	Ensures required settings is config for deploy and setup tasks
 	"""
 
-	# ensure required
 	required_settings = ['user', 'hosts', 'deploy_to', 'repository', 'branch']
 	try:
 		for setting in required_settings:
 			ensure(setting)
 	except EnsureConfigError:
 		raise BadConfigError('Bad config! Required settings are %s' % required_settings)
-
-	# set "py_mina" config
-	deploy_to = fetch('deploy_to')
-	config.update({
-		'scm': os.path.join(deploy_to, 'scm'), 
-		'shared_path': os.path.join(deploy_to, 'shared'), 
-		'current_path': os.path.join(deploy_to, 'current'), 
-		'releases_path': os.path.join(deploy_to, 'releases'), 
-		'build_to': os.path.join(deploy_to, 'tmp', 'build-' + str(time.time())),
-		})
-
-	# set "fabric" config
-	env.user = fetch('user')
-	env.hosts = fetch('hosts')
-	env.abort_on_prompts = fetch('abort_on_prompts')
 
 
 ################################################################################
@@ -71,7 +53,18 @@ def set(key, value):
 	Set config setting.
 	"""
 
-	config.update({ key: value })
+	if key in config.get('farbric_config_settings'):
+		env.update({ key: value })
+	elif key == 'deploy_to':
+		config.update({
+			'scm': os.path.join(value, 'scm'), 
+			'shared_path': os.path.join(value, 'shared'), 
+			'current_path': os.path.join(value, 'current'), 
+			'releases_path': os.path.join(value, 'releases'), 
+			'build_to': os.path.join(value, 'tmp', 'build-' + str(time.time())),
+			})
+	else:
+		config.update({ key: value })
 
 
 # Alias to prevent conflict when importing "py_mina.config" and "py_mina.state"

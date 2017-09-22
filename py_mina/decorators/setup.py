@@ -4,12 +4,12 @@ Decorator for setup task
 
 
 from fabric.api import task
-from py_mina.config import configure
+from py_mina.config import check_deploy_config
 from py_mina.tasks.setup import *
 
 
 def setup_task(fn):
-	configure()
+	check_deploy_config()
 
 
 	@task
