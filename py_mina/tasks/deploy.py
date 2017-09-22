@@ -5,7 +5,9 @@ Deploy tasks
 from __future__ import with_statement
 import os
 from fabric.api import *
+from fabric.colors import red, green
 from py_mina.config import fetch, ensure, set
+from py_mina.state import state
 
 
 ################################################################################
@@ -20,7 +22,7 @@ def check_lock():
 
 	ensure('deploy_to')
 	
-	with settings(warn_only=True), cd(fetch('deploy_to')):
+	with settings(hide('warnings'), warn_only=True), cd(fetch('deploy_to')):
 		if run('test -f deploy.lock').succeeded:
 			abort("Another deploy in progress")
 
@@ -60,13 +62,13 @@ def discover_latest_release():
 	releases_path = fetch('releases_path')
 
 	# Get release number
-	with settings(warn_only=True):
+	with settings(hide('warnings'), warn_only=True):
 		if run('test -d %s' % releases_path).failed:
 			run('mkdir -p %s' % releases_path)
 			last_release_number = 0
 		else:
 			releases_respond = run('ls -1p %s | sed "s/\///g"' % releases_path)
-			releases_dirs = filter(lambda x: len(x) != 0, releases_respond.split('\r\n'))
+			releases_dirs = list(filter(lambda x: len(x) != 0, releases_respond.split('\r\n')))
 
 			if len(releases_dirs) > 0:
 				last_release_number = max(map(lambda x: int(x), releases_dirs)) or 0
@@ -119,20 +121,14 @@ def link_shared_paths():
 		
 			run('mkdir -p %s' % relative_path_parent)
 			run('rm -rf %s' % relative_path)
-			run('ln -s "{0}" "{1}"'.format(
-				shared_path,
-				relative_path)
-				)
+			run('ln -s "{0}" "{1}"'.format(shared_path, relative_path))
 
 		# Shared files
 		for sfile in fetch('shared_files'):
 			relative_path = os.path.join('./', sfile)
 			shared_path = os.path.join(shared, sfile)
 
-			run('ln -sf "{0}" "{1}"'.format(
-				shared_path,
-				relative_path)
-				)
+			run('ln -sf "{0}" "{1}"'.format(shared_path, relative_path))
 
 
 def link_release_to_current():
@@ -198,27 +194,37 @@ def cleanup_releases():
 
 		run(cmd)
 
-		# run('count=$(ls -A1 | sort -rn | wc -l)')
-		# run('remove=$((count > {0} ? count - {0} : 0))'.format(releases_count))
-		# run('ls -A1 | sort -rn | tail -n $remove | xargs rm -rf {}')
+
+def print_deploy_stats():
+	if state.get('deploy') == True and state.get('post') == True:
+		print(green('Deploy finished with release %s' % fetch('release_number')))
+	else:
+		print(red('Deploy failed.'))
 
 
-def rollback():
+################################################################################
+# Rollback release
+################################################################################
+
+
+def rollback_release():
 	"""
 	Rollbacks the latest release.
 	"""
 	
-	# ensure('releases_path')
-	# ensure('current_path')
+	ensure('releases_path')
+	ensure('current_path')
 
-	# releases_path = fetch('releases_path')
+	releases_path = fetch('releases_path')
 
-	# with cd(releases_path):
-	# 	# Rollbacking to release: $rollback_release
-	# 	run('rollback_release=$(ls -1A | sort -n | tail -n 2 | head -n 1)')
-	# 	run('ln -nfs %s/$rollback_release %s' % (releases_path, fetch('current_path')))
+	with cd(releases_path):
+		cmd = '''
+		rollback_release=$(ls -1A | sort -n | tail -n 2 | head -n 1)
+		ln -nfs {0}/$rollback_release {1}
+		current_release=$(ls -1A | sort -n | tail -n 1)
+		rm -rf {0}/$current_release
+		echo "Successful rollback to release $rollback_release"
+		'''.format(releases_path, fetch('current_path'))
 
-	# 	# Deleting current release: $current_release
-	# 	run('current_release=$(ls -1A | sort -n | tail -n 1)')
-	# 	run('rm -rf %s/$current_release' % releases_path)
+		run(cmd)
 

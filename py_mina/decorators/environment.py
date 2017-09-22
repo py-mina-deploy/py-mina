@@ -10,9 +10,9 @@ def environment_task(fn):
 
 
 def with_environment(name):
-	def wrapper(fn):
-		def wrapper_fn(*args):
+	def wrapper_fn(fn):
+		def wrapper_args(*args):
 			print('with environment %s' % name)
 			print('called function  %s' % fn.__name__)
-		return wrapper_fn
-	return wrapper
+		return wrapper_args
+	return wrapper_fn

@@ -3,13 +3,6 @@ Utilities
 """
 
 
-from fabric.colors import *
-
-
-def print_stats():
-    print(red('PRINTING STATS'))
-
-
 class _AttributeDict(dict):
     """
     Dictionary subclass enabling attribute lookup/assignment of keys/values.

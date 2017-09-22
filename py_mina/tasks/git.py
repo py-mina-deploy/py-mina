@@ -2,6 +2,7 @@
 Git tasks
 """
 
+
 from __future__ import with_statement
 import os
 from fabric.api import *
@@ -30,9 +31,7 @@ def maybe_clone_git_repository():
 
 	with settings(warn_only=True):
 		if run('test -d %s' % scm).failed:
-			run('git clone {0} {1} --bare'.format(
-				fetch('repository'), scm)
-				)
+			run('git clone {0} {1} --bare'.format(fetch('repository'), scm))
 
 
 def fetch_new_commits():
@@ -45,10 +44,7 @@ def fetch_new_commits():
 	ensure('branch')
 
 	with cd(fetch('scm')):
-		run('git fetch {0} "{1}:{1}" --force'.format(
-			fetch('repository'),
-			fetch('branch'))
-			)
+		run('git fetch {0} "{1}:{1}" --force'.format(fetch('repository'), fetch('branch')))
 
 
 def use_git_branch():
@@ -61,9 +57,6 @@ def use_git_branch():
 	ensure('branch')
 
 	with cd(fetch('build_to')):
-		run('git clone {0} . --recursive --branch {1}'.format(
-			fetch('scm'),
-			fetch('branch'))
-			)
+		run('git clone {0} . --recursive --branch {1}'.format(fetch('scm'), fetch('branch')))
 		run('rm -rf .git')
 

@@ -2,6 +2,7 @@
 Deploy flow for Django Rest Framework (http://www.django-rest-framework.org/)
 """
 
+
 from fabric.api import run, cd
 from py_mina import *
 from py_mina.tasks import *
@@ -30,7 +31,13 @@ set('shared_files', [
 # Tasks
 ################################################################################
 
-@deploy_task
+
+# Launch process is described in `README.md`
+def launch():
+	run('sudo monit restart -g my_drf_app_prod')
+
+
+@deploy_task(on_launch=launch)
 def deploy():
 	git_clone()
 	link_shared_paths()
@@ -46,12 +53,6 @@ def deploy():
 		# Migrate DB
 		run('python ./manage.py makemigrations')
 		run('python ./manage.py migrate')
-
-
-# Launch process is described in `README.md`
-@launch_task
-def launch():
-	run('sudo monit restart -g my_drf_app_prod')
 
 
 @setup_task

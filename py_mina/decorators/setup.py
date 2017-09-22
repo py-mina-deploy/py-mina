@@ -9,6 +9,9 @@ from py_mina.tasks.setup import *
 
 
 def setup_task(fn):
+	"""
+	Setup task function decorator
+	"""
 
 	@task
 	def setup(*args):

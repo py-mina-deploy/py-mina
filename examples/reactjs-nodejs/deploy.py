@@ -2,6 +2,7 @@
 Deploy flow for NodeJs application (https://github.com/react-boilerplate/react-boilerplate)
 """
 
+
 from fabric.api import run, cd
 from py_mina import *
 from py_mina.tasks import *
@@ -26,19 +27,18 @@ set('shared_dirs', [
 ################################################################################
 
 
-@deploy_task
+# Launch process is described in `README.md`
+def launch():
+	run('sudo monit restart -g nodejs_app_prod')
+
+
+@deploy_task(on_launch=launch)
 def deploy():
 	git_clone()
 	link_shared_paths()
 
 	run('npm install')
 	run('npm run build')
-
-
-# Launch process is described in `README.md`
-@launch_task
-def launch():
-	run('sudo monit restart -g nodejs_app_prod')
 
 
 @setup_task

@@ -7,6 +7,11 @@ from py_mina.utils import _AttributeDict
 from py_mina.exceptions import StateError
 
 
+################################################################################
+# Default state
+################################################################################
+
+
 state = _AttributeDict({
 	'pre': None,	
 	'deploy': None,	
@@ -14,6 +19,12 @@ state = _AttributeDict({
 	'finallize': None,
 	'launch': None,
 })
+
+
+################################################################################
+# Set state
+################################################################################
+
 
 def set(key, value):
 	if value in [True, False]:

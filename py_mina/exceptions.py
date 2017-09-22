@@ -59,10 +59,6 @@ class FinallizeDeployError(Exception):
 ################################################################################
 
 
-class LaunchSingletonError(Exception):
-	pass
-
-
 class LaunchError(Exception):
 	pass
 
