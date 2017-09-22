@@ -9,11 +9,15 @@ from py_mina.tasks.setup import *
 
 
 def setup_task(fn):
-	check_deploy_config()
-
 
 	@task
 	def setup(*args):
+		"""
+		Runs setup on remote server
+		"""
+
+		check_deploy_config()
+
 		with settings(colorize_errors=True):
 			create_required()
 			create_shared()

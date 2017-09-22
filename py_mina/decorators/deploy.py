@@ -14,8 +14,6 @@ from py_mina.tasks.deploy import *
 
 
 def deploy_task(fn):
-	check_deploy_config()
-
 
 ################################################################################	
 # INTERNAL
@@ -88,8 +86,8 @@ def deploy_task(fn):
 			5) Launch application
 			6) Show deploy stats
 		"""
-
-		ensure('build_to')
+		
+		check_deploy_config()
 
 		with settings(colorize_errors=True):
 			try:
