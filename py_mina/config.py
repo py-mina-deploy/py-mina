@@ -26,7 +26,37 @@ config = _AttributeDict({
 
 
 ################################################################################
-# Configure environment
+# Set config
+################################################################################
+
+
+def set(key, value):
+	"""
+	Set config setting.
+	"""
+
+	if key in config.get('farbric_config_settings'):
+		env.update({ key: value })
+		config.update({ key: value })
+	elif key == 'deploy_to':
+		config.update({
+			'deploy_to': value, 
+			'scm': os.path.join(value, 'scm'), 
+			'shared_path': os.path.join(value, 'shared'), 
+			'current_path': os.path.join(value, 'current'), 
+			'releases_path': os.path.join(value, 'releases'), 
+			'build_to': os.path.join(value, 'tmp', 'build-' + str(time.time())),
+		})
+	else:
+		config.update({ key: value })
+
+
+# Alias to prevent conflict when importing "py_mina.config" and "py_mina.state"
+set_config = set
+
+
+################################################################################
+# Helpers
 ################################################################################
 
 
@@ -40,35 +70,13 @@ def check_deploy_config():
 		for setting in required_settings:
 			ensure(setting)
 	except EnsureConfigError:
-		raise BadConfigError('Bad config! Required settings are %s' % required_settings)
+		msg = '''
+		Bad config! 
+		Required settings: {0}
+		Current config: {1}
+		'''.format(required_settings, config)
 
-
-################################################################################
-# Helpers
-################################################################################
-
-
-def set(key, value):
-	"""
-	Set config setting.
-	"""
-
-	if key in config.get('farbric_config_settings'):
-		env.update({ key: value })
-	elif key == 'deploy_to':
-		config.update({
-			'scm': os.path.join(value, 'scm'), 
-			'shared_path': os.path.join(value, 'shared'), 
-			'current_path': os.path.join(value, 'current'), 
-			'releases_path': os.path.join(value, 'releases'), 
-			'build_to': os.path.join(value, 'tmp', 'build-' + str(time.time())),
-			})
-	else:
-		config.update({ key: value })
-
-
-# Alias to prevent conflict when importing "py_mina.config" and "py_mina.state"
-set_config = set
+		raise BadConfigError(msg)
 
 
 def fetch(key, default_value=None):
