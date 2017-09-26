@@ -13,7 +13,6 @@ def setup_task(fn):
 	Setup task function decorator
 	"""
 
-	@task
 	def setup(*args):
 		"""
 		Runs setup on remote server
@@ -29,5 +28,9 @@ def setup_task(fn):
 
 			fn(*args)
 
+	# Copy __name__ and __doc__ from decorated function to decorator function
+	setup.__name__ = fn.__name__
+	if fn.__doc__: setup.__doc__ = fn.__doc__
 
-	return setup
+	# Decorate with "fabric" @task decorator
+	return task(setup)
