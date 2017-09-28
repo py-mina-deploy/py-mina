@@ -1,22 +1,15 @@
 # py-mina
 
-> Inspired by https://github.com/mina-deploy/mina
+> __Deployer and server automation tool__
 
-Python library for __deploying__ applications on __remote server__. [Fabric](http://www.fabfile.org/) library is used as __connection manager__.
+Python library for __deploying__ applications on __remote server__. Based on [Fabric](http://www.fabfile.org/) library which handles ssh connections to remote server.
 
-## Decorator tasks
+Inspired by https://github.com/mina-deploy/mina
 
-### @setup_task
+## Documentation
 
-> to be described
-
-### @deploy_task
-
-> to be described
-
-### @launch_task
-
-> to be described
+* [Getting started](docs/getting-started.md)
+* [API Docs](docs/apidocs.md)
 
 ## Examples
 
