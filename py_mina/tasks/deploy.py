@@ -4,10 +4,11 @@ Deploy tasks
 
 from __future__ import with_statement
 import os
-from fabric.api import *
 from fabric.colors import red, green
+from fabric.api import *
 from py_mina.config import fetch, ensure, set
 from py_mina.state import state
+from py_mina.echo import *
 
 
 ################################################################################
@@ -34,6 +35,8 @@ def lock():
 
 	ensure('build_to')
 
+	echo_subtask("Creating deploy.lock")
+
 	with cd(fetch('deploy_to')):
 		run('touch deploy.lock')
 
@@ -44,6 +47,8 @@ def unlock():
 	"""
 
 	ensure('deploy_to')
+
+	echo_subtask("Removing deploy.lock")
 
 	with cd(fetch('deploy_to')):
 		run('rm -f deploy.lock')
@@ -60,6 +65,8 @@ def discover_latest_release():
 	"""
 
 	releases_path = fetch('releases_path')
+
+	echo_subtask("Discovering latest release number")
 
 	# Get release number
 	with settings(hide('warnings'), warn_only=True):
@@ -93,6 +100,8 @@ def create_build_path():
 	
 	ensure('build_to')
 
+	echo_subtask("Creating build path")
+
 	with settings(warn_only=True):
 		build_path = fetch('build_to')
 
@@ -109,6 +118,8 @@ def link_shared_paths():
 	ensure('shared_path')
 	ensure('shared_dirs')
 	ensure('shared_files')
+
+	echo_subtask("Linking shared paths")
 
 	with cd(fetch('build_to')):
 		shared = fetch('shared_path')
@@ -131,20 +142,6 @@ def link_shared_paths():
 			run('ln -sf "{0}" "{1}"'.format(shared_path, relative_path))
 
 
-def link_release_to_current():
-	"""
-	Links shared paths to build dir
-	"""
-
-	ensure('release_to')
-	ensure('current_path')
-
-	release_to = fetch('release_to')
-
-	with cd(release_to):
-		run('ln -nfs %s %s' % (release_to, fetch('current_path')))
-
-
 ################################################################################
 # POST Deploy
 ################################################################################
@@ -158,18 +155,34 @@ def move_build_to_releases():
 	ensure('build_to')
 	ensure('release_to')
 
-	run('mv %s %s' % (
-		fetch('build_to'), 
-		fetch('release_to'))
-		)
+	echo_subtask("Moving build to releases")
 
+	run('mv %s %s' % (fetch('build_to'), fetch('release_to')))
+
+
+
+def link_release_to_current():
+	"""
+	Links shared paths to build dir
+	"""
+
+	ensure('release_to')
+	ensure('current_path')
+
+	echo_subtask("Linking release to current")
+
+	release_to = fetch('release_to')
+
+	with cd(release_to):
+		run('ln -nfs %s %s' % (release_to, fetch('current_path')))
 
 def remove_build_path():
 	"""
 	Removes a temporary build dir
 	"""
-	
 	ensure('build_to')
+	
+	echo_subtask("Removing build path")
 
 	with settings(hide('stdout', 'warnings'), warn_only=True):
 		run('rm -rf %s' % fetch('build_to'))
@@ -185,21 +198,45 @@ def cleanup_releases():
 
 	releases_count = str(fetch('keep_releases'))
 
+	echo_subtask("Cleaning up old realeses. Keeping latest %s" % releases_count)
+
 	with cd(fetch('releases_path')):
 		cmd = '''
-		count=$(ls -A1 | sort -rn | wc -l)
-		remove=$((count > %s ? count - %s : 0))
-		ls -A1 | sort -rn | tail -n $remove | xargs rm -rf {}
+count=$(ls -A1 | sort -rn | wc -l)
+remove=$((count > %s ? count - %s : 0))
+ls -A1 | sort -rn | tail -n $remove | xargs rm -rf {}
 		''' % (releases_count, releases_count)
 
 		run(cmd)
 
 
 def print_deploy_stats():
-	if state.get('deploy') == True and state.get('post') == True:
-		print(green('Deploy finished with release %s' % fetch('release_number')))
-	else:
+	release_number = fetch('release_number')
+	deploy_successful = state.get('deploy') == True and state.get('post') == True
+
+	# Status
+	print('\n')
+	if deploy_successful: 
+		print(green('Deploy finished.'))
+	else: 
 		print(red('Deploy failed.'))
+
+	# Subtasks
+	if fetch('verbose') or not deploy_successful:
+		print('\n')
+		echo_comment('[SUBTASKS]')
+		echo_comment('* pre_deploy: %s' % state.get('pre'))
+		echo_comment('* deploy: %s' % state.get('deploy'))
+		echo_comment('* post_deploy: %s' % state.get('post'))
+		echo_comment('* finallize: %s' % state.get('finallize'))
+		echo_comment('* launch: %s' % state.get('launch'))
+
+	# Release
+	if deploy_successful:
+		print('\n')
+		echo_comment('[RELEASE]')
+		echo_comment('* number: %s' % release_number)
+		echo_comment('* path: %s' % fetch('release_to'))
 
 
 ################################################################################
@@ -215,16 +252,26 @@ def rollback_release():
 	ensure('releases_path')
 	ensure('current_path')
 
+	echo_task("Rollbacking current release")
+
 	releases_path = fetch('releases_path')
 
 	with cd(releases_path):
-		cmd = '''
-		rollback_release=$(ls -1A | sort -n | tail -n 2 | head -n 1)
-		ln -nfs {0}/$rollback_release {1}
-		current_release=$(ls -1A | sort -n | tail -n 1)
-		rm -rf {0}/$current_release
-		echo "Successful rollback to release $rollback_release"
-		'''.format(releases_path, fetch('current_path'))
+		echo_subtask('Finding previous release for rollback')
+		rollback_release = run('ls -1A | sort -n | tail -n 2 | head -n 1')
 
-		run(cmd)
+		if int(rollback_release) > 0:
+			echo_subtask('Linking previous release to current')
+			run('ln -nfs %s/%s %s' % (releases_path, rollback_release, fetch('current_path')))
 
+			echo_subtask('Finding current release')
+			current_release = run('ls -1A | sort -n | tail -n 1')
+
+			if int(current_release) > 0:
+				echo_subtask('Removing current release')
+				run('rm -rf %s/%s' % (releases_path, current_release))
+			else:
+				abort('Can\'t find current release for remove.')
+				
+		else:
+			abort('Can\'t find previous release for rollback.')

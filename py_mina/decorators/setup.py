@@ -3,9 +3,10 @@ Decorator for setup task
 """
 
 
-from fabric.api import task
+from fabric.api import task, settings, hide
 from py_mina.config import check_deploy_config
 from py_mina.tasks.setup import *
+from py_mina.echo import echo_task
 
 
 def setup_task(fn):
@@ -15,12 +16,14 @@ def setup_task(fn):
 
 	def setup(*args):
 		"""
-		Runs setup on remote server
+		Runs setup process on remote server
 		"""
+
+		echo_task('Running "setup" task')
 
 		check_deploy_config()
 
-		with settings(colorize_errors=True):
+		with settings(hide('output'), colorize_errors=True):
 			create_required()
 			create_shared()
 			add_repo_to_known_hosts()

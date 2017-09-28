@@ -21,6 +21,7 @@ config = _AttributeDict({
 	'shared_files': [],
 	'shared_dirs': [],
 	'abort_on_prompts': False,
+	'verbose': False,
 	'farbric_config_settings': ['user', 'hosts', 'abort_on_prompts']
 })
 

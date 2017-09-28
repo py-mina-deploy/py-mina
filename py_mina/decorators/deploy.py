@@ -9,7 +9,7 @@ from py_mina.config import check_deploy_config
 from py_mina.state import state, set_state
 from py_mina.exceptions import *
 from py_mina.tasks.deploy import *
-
+from py_mina.echo import echo_task
 
 def deploy_task(on_launch=None):
 	"""
@@ -49,7 +49,8 @@ def deploy_task(on_launch=None):
 		def finallize_deploy():
 			with settings(abort_exception=FinallizeDeployError):
 				try: 
-					if state.get('deploy') == True: cleanup_releases()
+					if state.get('deploy') == True:
+						cleanup_releases()
 					remove_build_path()
 					unlock()
 
@@ -69,7 +70,6 @@ def deploy_task(on_launch=None):
 						set_state('launch', False)
 
 
-		# @task
 		def deploy(*args):
 			"""
 			Runs deploy process on remote server

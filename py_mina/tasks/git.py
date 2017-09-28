@@ -6,13 +6,15 @@ Git tasks
 from __future__ import with_statement
 import os
 from fabric.api import *
-from py_mina.config import *
+from py_mina.echo import echo_subtask, echo_task
 
 
 def git_clone():
 	"""
 	Clones repository to tmp build dir
 	"""
+
+	echo_task('Running "git_clone" task')
 
 	maybe_clone_git_repository()
 	fetch_new_commits()
@@ -27,10 +29,13 @@ def maybe_clone_git_repository():
 	ensure('repository')
 	ensure('scm')
 
+
 	scm = fetch('scm')
 
 	with settings(warn_only=True):
 		if run('test -d %s' % scm).failed:
+			echo_subtask("Cloning bare git repository")
+
 			run('git clone {0} {1} --bare'.format(fetch('repository'), scm))
 
 
@@ -42,6 +47,8 @@ def fetch_new_commits():
 	ensure('scm')
 	ensure('repository')
 	ensure('branch')
+
+	echo_subtask("Fetching new commits")
 
 	with cd(fetch('scm')):
 		run('git fetch {0} "{1}:{1}" --force'.format(fetch('repository'), fetch('branch')))
@@ -55,6 +62,8 @@ def use_git_branch():
 	ensure('build_to')
 	ensure('scm')
 	ensure('branch')
+
+	echo_subtask("Copy code from repository to build folder")
 
 	with cd(fetch('build_to')):
 		run('git clone {0} . --recursive --branch {1}'.format(fetch('scm'), fetch('branch')))
