@@ -8,17 +8,22 @@ except IOError:
 
 setup(
     name="py-mina",
-    version="0.0.9",
+    version="0.0.10",
     description="Python library for deploying applications on remote server",
+    long_description=long_description,
     license="MIT",
     author="Cidevant Von Goethe",
     author_email="cidevant@mail.ru",
     url="https://github.com/py-mina-deploy/py-mina",
     packages=find_packages(),
+    entry_points={
+        'console_scripts': [
+            'py_mina = cli.py_mina:run',
+        ]
+    },
     install_requires=[
 		'fabric3',
     ],
-    long_description=long_description,
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
