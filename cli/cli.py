@@ -5,12 +5,17 @@ Command line interface (CLI) for py_mina
 
 
 import argparse
-from commands import cli_init, cli_setup, cli_run
+from cli.commands import cli_command_init, cli_command_run
+import pkg_resources
 
+try:
+	version = pkg_resources.require("py_mina")[0].version
+except Exception:
+	version = '[error]'
 
 def run():
 	#
-	# Arguments parsers
+	# Arguments parser
 	#
 
 
@@ -26,7 +31,7 @@ def run():
 
 	parser.add_argument(
 		'-v', '--version', 
-		action='version', version='%(prog)s 2.0')
+		action='version', version='py_mina %s' % version)
 
 
 	parser.add_argument(
@@ -48,9 +53,15 @@ def run():
 	# Init
 
 
-	commands.add_parser(
+	init_parser = commands.add_parser(
 		'init', 
-		help='creates a sample config file in ./deploy/deploy.py')
+		help='creates a sample deploy file')
+
+
+	init_parser.add_argument(
+		'-f', '--filename', 
+		help='deploy file to create',
+		dest='filename', default='deploy/deploy.py')
 
 
 	# Run
@@ -77,11 +88,6 @@ def run():
 	args = vars(parser.parse_args())
 	command = args.get('command')
 
-	if command == 'init': cli_init(args)
-	elif command == 'setup': cli_setup(args)
-	elif command == 'run': cli_run(args)
+	if command == 'init': cli_command_init(args)
+	elif command == 'run': cli_command_run(args)
 	else: parser.print_help()
-
-
-# Execute if called from console
-if __name__ == '__main__': run()
