@@ -7,7 +7,7 @@ except IOError:
     long_description = "Deployer and server automation tool."
 
 setup(
-    name="py-mina",
+    name="py_mina",
     version="0.0.10",
     description="Python library for deploying applications on remote server",
     long_description=long_description,
