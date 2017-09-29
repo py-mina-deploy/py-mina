@@ -127,18 +127,20 @@ def link_shared_paths():
 		# Shared dirs
 		for sdir in fetch('shared_dirs'):
 			relative_path = os.path.join('./', sdir)
-			relative_path_parent = os.path.join(*relative_path.split('/')[:-1])
+			directory, filename_ = os.path.split(relative_path)
 			shared_path = os.path.join(shared, sdir)
 		
-			run('mkdir -p %s' % relative_path_parent)
+			run('mkdir -p %s' % directory)
 			run('rm -rf %s' % relative_path)
 			run('ln -s "{0}" "{1}"'.format(shared_path, relative_path))
 
 		# Shared files
 		for sfile in fetch('shared_files'):
-			relative_path = os.path.join('./', sfile)
 			shared_path = os.path.join(shared, sfile)
+			relative_path = os.path.join('./', sfile)
+			directory, filename_ = os.path.split(relative_path)
 
+			run('mkdir -p %s' % directory)
 			run('ln -sf "{0}" "{1}"'.format(shared_path, relative_path))
 
 

@@ -7,16 +7,11 @@ from fabric.colors import *
 
 
 def echo_task(message):
-	fillment = (len(message) + 14) * '='
-
-	print(yellow('%s' % fillment))
-	print(yellow('=====> %s <=====' % message))
-	print(yellow('%s' % fillment))
+	print(yellow('=====> %s' % message))
 
 
 def echo_subtask(message):
-	print('')
-	print(cyan('-----> %s' % message))
+	print(cyan('\n-----> %s' % message))
 
 
 def echo_comment(message):

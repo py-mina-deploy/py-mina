@@ -9,20 +9,21 @@ py_mina - Sample deploy file
 
 
 from fabric.api import *
-from py_mina import *
+from py_mina import set, deploy_task, setup_task, ensure
+from py_mina.tasks import git_clone, link_shared_paths
 
 
 # Settings - remote server
 
 
-set('user', 'deploy-user')
-set('hosts', ['example.com'])
+set('user', 'deploy')
+set('hosts', ['localhost'])
 
 
 # Settings - deploy
 
 
-set('deploy_to', '$HOME/example_application')
+set('deploy_to', '/var/www/example_application')
 set('repository', 'https://github.com/py-mina-deploy/py-mina')
 set('branch', 'master')
 set('shared_dirs', ['logs', 'tmp'])

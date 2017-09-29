@@ -5,6 +5,7 @@ py_mina CLI commands
 
 import os
 from fabric.main import load_fabfile
+from fabric.tasks import execute
 from fabric.colors import green, red
 from cli.templates import deploy_file_sample
 
@@ -27,7 +28,8 @@ def cli_command_run(args):
 		docstring, callables, default = load_fabfile(fullpath)
 
 		if task_name in callables:
-			callables[task_name]()
+			execute(callables[task_name])
+
 
 
 #
@@ -37,7 +39,7 @@ def cli_command_run(args):
 
 def cli_command_init(args):
 	"""
-	Creates a sample config file in ./deploy/deploy.py
+	Creates a sample config file (default path is ./deploy/deploy.py)
 	"""
 
 	filepath = args.get('filename')

@@ -7,14 +7,13 @@ from __future__ import with_statement
 import os
 from fabric.api import *
 from py_mina.echo import echo_subtask, echo_task
+from py_mina.config import fetch, ensure
 
 
 def git_clone():
 	"""
 	Clones repository to tmp build dir
 	"""
-
-	echo_task('Running "git_clone" task')
 
 	maybe_clone_git_repository()
 	fetch_new_commits()
@@ -33,6 +32,8 @@ def maybe_clone_git_repository():
 	scm = fetch('scm')
 
 	with settings(warn_only=True):
+		echo_subtask("Ensure git repository")
+
 		if run('test -d %s' % scm).failed:
 			echo_subtask("Cloning bare git repository")
 

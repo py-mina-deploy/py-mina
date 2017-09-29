@@ -72,9 +72,9 @@ def check_deploy_config():
 			ensure(setting)
 	except EnsureConfigError:
 		msg = '''
-		Bad config! 
-		Required settings: {0}
-		Current config: {1}
+Bad config! 
+Required settings: {0}
+Current config: {1}
 		'''.format(required_settings, config)
 
 		raise BadConfigError(msg)

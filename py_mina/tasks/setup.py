@@ -38,8 +38,11 @@ def create_shared():
 			run('mkdir -p %s' % sdir)
 
 		for sfile in fetch('shared_files'):
-			path_parent = os.path.join(*sfile.split('/')[:-1])
-			run('mkdir -p %s' % path_parent)
+			directory, filename_ = os.path.split(sfile)
+
+			if directory: 
+				run('mkdir -p %s' % directory)
+
 			run('touch ' + sfile)
 			run('chmod g+rx,u+rwx ' + sfile)
 
