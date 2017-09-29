@@ -53,20 +53,6 @@ def run():
 		help='creates a sample config file in ./deploy/deploy.py')
 
 
-	# Setup
-
-
-	setup_parser = commands.add_parser(
-		'setup', 
-		help='runs setup process on remote server')
-
-
-	setup_parser.add_argument(
-		'-f', '--filename', 
-		help='deploy file to import',
-		dest='filename', default='deploy/deploy.py')
-
-
 	# Run
 
 

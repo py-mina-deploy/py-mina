@@ -1,3 +1,7 @@
+# 0.1
+
+* py_mina cli
+
 # 0.0.9
 
 * copy __name__ and __doc__ from decorated function to decoration function, therefore you can find it by `fab -H /path/to/file.py -l`
