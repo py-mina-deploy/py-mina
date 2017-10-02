@@ -8,10 +8,12 @@ import argparse
 from cli.commands import cli_command_init, cli_command_run
 import pkg_resources
 
+
 try:
 	version = pkg_resources.require("py_mina")[0].version
 except Exception:
 	version = '[error]'
+
 
 def run():
 	#

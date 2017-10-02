@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 try:
-    long_description = open("README.rst").read()
+    long_description = open("README").read()
 except IOError:
     long_description = "Deployer and server automation tool."
 
