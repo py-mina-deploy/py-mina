@@ -37,9 +37,9 @@ def run():
 
 
 	parser.add_argument(
-		'-q', '--quite', 
-		help='don\'t use verbose mode',
-		action='store_true')
+		'-f', '--filename', 
+		help='deployfile location',
+		dest='filename', default='deploy/deploy.py')
 
 
 	#
@@ -60,13 +60,7 @@ def run():
 		help='creates a sample deploy file')
 
 
-	init_parser.add_argument(
-		'-f', '--filename', 
-		help='deploy file to create',
-		dest='filename', default='deploy/deploy.py')
-
-
-	# Run
+	# Run task
 
 
 	run_parser = commands.add_parser(
@@ -79,17 +73,22 @@ def run():
 		help='task to run on remote server')
 
 
-	run_parser.add_argument(
-		'-f', '--filename', 
-		help='deploy file to import',
-		dest='filename', default='deploy/deploy.py')
+	# List tasks
+
+
+	list_parser = commands.add_parser(
+		'list', 
+		help='lists available tasks in deployfile',
+		aliases=['ls'])
 
 
 	#---------------------------------------------------------------------------
+
 
 	args = vars(parser.parse_args())
 	command = args.get('command')
 
 	if command == 'init': cli_command_init(args)
 	elif command == 'run': cli_command_run(args)
+	elif command == 'list' or command == 'ls': cli_command_run(args)
 	else: parser.print_help()

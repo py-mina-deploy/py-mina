@@ -31,7 +31,6 @@ def cli_command_run(args):
 			execute(callables[task_name])
 
 
-
 #
 # Init
 #
@@ -56,8 +55,7 @@ def cli_command_init(args):
 			with open(filepath, 'w') as f:
 				f.write(deploy_file_sample)
 
-			print(green('Sample deploy file successfully created in %s' % fullpath))
+			print(green('Deployfile sample successfully created in %s' % fullpath))
 
 		except Exception as error: 
 			print(red(error))
-

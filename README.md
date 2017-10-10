@@ -1,13 +1,35 @@
-"""
-Templates
-"""
+# py-mina
 
-deploy_file_sample = '''
-"""
-py_mina - Sample deploy file
-"""
+> __Deployer and server automation tool__
+
+Python library for __deploying__ applications on __remote server__. Based on [Fabric](http://www.fabfile.org/) library which handles ssh connections to remote server.
+
+Inspired by https://github.com/mina-deploy/mina
+
+## Documentation
+
+* [Getting started](docs/getting-started.md)
+* [API Docs](docs/apidocs.md)
+
+## Examples
+
+In [examples](examples) folder you will find examples of deploying:
+
+* __frontend__ application - [reactjs-nodejs](examples/reactjs-nodejs)
+* __backend__ application - [django-rest-framework](examples/django-rest-framework)
 
 
+## Usage
+
+#### 1. Create deployfile
+
+```
+$ py_mina init
+```
+
+will generate following file in `deploy/deploy.py`:
+
+```
 from fabric.api import run
 from py_mina import set, deploy_task, setup_task, task
 from py_mina.tasks import git_clone, link_shared_paths
@@ -65,4 +87,11 @@ def setup():
 	run('echo "Deploy setup"')
 
 	# ... your setup commands ...
-'''
+```
+
+#### 2. Run task from deployfile
+
+```
+$ py_mina -f deploy/deploy.py run setup
+$ py_mina -f deploy/deploy.py run deploy
+```
