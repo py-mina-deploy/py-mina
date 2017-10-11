@@ -2,14 +2,11 @@
 Templates
 """
 
-deploy_file_sample = '''
-"""
-py_mina - Sample deploy file
+deploy_file_sample = '''"""
+py_mina - deployfile sample
 """
 
-
-from fabric.api import run
-from py_mina import set, deploy_task, setup_task, task
+from py_mina import *
 from py_mina.tasks import git_clone, link_shared_paths
 
 
@@ -20,7 +17,7 @@ set('user', 'deploy')
 set('hosts', ['localhost'])
 
 
-# Settings - deploy
+# Settings - application
 
 
 set('deploy_to', '/var/www/example_application')
