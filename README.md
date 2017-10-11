@@ -30,8 +30,7 @@ $ py_mina init
 will generate following file in `deploy/deploy.py`:
 
 ```
-from fabric.api import run
-from py_mina import set, deploy_task, setup_task, task
+from py_mina import *
 from py_mina.tasks import git_clone, link_shared_paths
 
 
@@ -42,7 +41,7 @@ set('user', 'deploy')
 set('hosts', ['localhost'])
 
 
-# Settings - deploy
+# Settings - application
 
 
 set('deploy_to', '/var/www/example_application')
@@ -89,7 +88,7 @@ def setup():
 	# ... your setup commands ...
 ```
 
-#### 2. Run task from deployfile
+#### 2. Run `task` from deployfile
 
 ```
 $ py_mina -f deploy/deploy.py run setup

@@ -11,6 +11,33 @@ from cli.templates import deploy_file_sample
 
 
 #
+# List
+#
+
+
+def cli_command_list(args):
+	"""
+	Runs task from deploy file
+	"""
+	
+	filepath = args.get('filename')
+	task_name = args.get('task')
+
+	if filepath:
+		fullpath = os.path.join(os.path.realpath(os.curdir), filepath)
+		docstring, callables, default = load_fabfile(fullpath)
+
+		print(docstring)
+		print('Available commands:')
+		print('')
+
+		for task_name in callables:
+			task_desc = callables.get(task_name).__doc__.lstrip('\n').rstrip('\n')
+
+			print('%s   %s' % (green(task_name), task_desc))
+
+
+#
 # Run
 #
 
@@ -55,7 +82,7 @@ def cli_command_init(args):
 			with open(filepath, 'w') as f:
 				f.write(deploy_file_sample)
 
-			print(green('Deployfile sample successfully created in %s' % fullpath))
+			print(green('Deployfile successfully created in %s' % fullpath))
 
 		except Exception as error: 
 			print(red(error))

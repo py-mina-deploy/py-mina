@@ -5,8 +5,8 @@ Command line interface (CLI) for py_mina
 
 
 import argparse
-from cli.commands import cli_command_init, cli_command_run
 import pkg_resources
+from cli.commands import *
 
 
 try:
@@ -57,15 +57,15 @@ def run():
 
 	init_parser = commands.add_parser(
 		'init', 
-		help='creates a sample deploy file')
+		help='creates a sample deployfile')
 
 
-	# Run task
+	# Run
 
 
 	run_parser = commands.add_parser(
 		'run', 
-		help='runs task from deploy file')
+		help='runs task from deployfile')
 
 
 	run_parser.add_argument(
@@ -73,7 +73,7 @@ def run():
 		help='task to run on remote server')
 
 
-	# List tasks
+	# List
 
 
 	list_parser = commands.add_parser(
@@ -90,5 +90,5 @@ def run():
 
 	if command == 'init': cli_command_init(args)
 	elif command == 'run': cli_command_run(args)
-	elif command == 'list' or command == 'ls': cli_command_run(args)
+	elif command == 'list' or command == 'ls': cli_command_list(args)
 	else: parser.print_help()
