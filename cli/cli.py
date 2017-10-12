@@ -6,7 +6,7 @@ Command line interface (CLI) for py_mina
 
 import argparse
 import pkg_resources
-from cli.commands import *
+from cli.cmds import cli_command_list, cli_command_run, cli_command_init
 
 
 try:
