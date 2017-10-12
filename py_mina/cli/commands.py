@@ -27,14 +27,20 @@ def cli_command_list(args):
 		fullpath = os.path.join(os.path.realpath(os.curdir), filepath)
 		docstring, callables, default = load_fabfile(fullpath)
 
-		print(docstring)
-		print('Available commands:')
-		print('')
+		if not docstring == None:
+			print(docstring.rstrip('\n'))
+
+		print('\nAvailable commands:\n')
 
 		for task_name in callables:
-			task_desc = callables.get(task_name).__doc__.lstrip('\n').rstrip('\n')
+			task_desc = callables.get(task_name).__doc__
 
-			print('%s   %s' % (green(task_name), task_desc))
+			if not task_desc == None:
+				description = task_desc.lstrip('\n').rstrip('\n')
+			else:
+				description = '\n'
+
+			print('%s   %s' % (green(task_name), description))
 
 
 #
