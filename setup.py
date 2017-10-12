@@ -8,7 +8,7 @@ except IOError:
 
 setup(
     name="py_mina",
-    version="0.1.2",
+    version="0.1.4",
     description="Python library for deploying applications on remote server",
     long_description=long_description,
     license="MIT",
@@ -18,7 +18,7 @@ setup(
     packages=find_packages(),
     entry_points={
         'console_scripts': [
-            'py_mina = cli.cli:run',
+            'py_mina = py_mina.cli.cli:run',
         ]
     },
     install_requires=[

@@ -6,7 +6,7 @@ Command line interface (CLI) for py_mina
 
 import argparse
 import pkg_resources
-from cli.cmds import cli_command_list, cli_command_run, cli_command_init
+from py_mina.cli.commands import *
 
 
 try:
@@ -78,8 +78,7 @@ def run():
 
 	list_parser = commands.add_parser(
 		'list', 
-		help='lists available tasks in deployfile',
-		aliases=['ls'])
+		help='lists available tasks in deployfile')
 
 
 	#---------------------------------------------------------------------------
@@ -90,5 +89,5 @@ def run():
 
 	if command == 'init': cli_command_init(args)
 	elif command == 'run': cli_command_run(args)
-	elif command == 'list' or command == 'ls': cli_command_list(args)
+	elif command == 'list': cli_command_list(args)
 	else: parser.print_help()

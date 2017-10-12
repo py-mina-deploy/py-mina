@@ -7,7 +7,7 @@ import os
 from fabric.main import load_fabfile
 from fabric.tasks import execute
 from fabric.colors import green, red
-from cli.templates import deploy_file_sample
+from py_mina.cli.templates import deploy_file_sample
 
 
 #
@@ -76,7 +76,8 @@ def cli_command_init(args):
 
 		try:
 			# Create deployfile directory if not exists
-			os.makedirs(directory, exist_ok=True)
+			if not os.path.exists(directory):
+			    os.makedirs(directory)
 
 			# Write template string to file
 			with open(filepath, 'w') as f:
