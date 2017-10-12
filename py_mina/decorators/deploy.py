@@ -105,6 +105,7 @@ def deploy_task(on_launch=None):
 			# Show deploy stats
 			print_deploy_stats()
 
+		
 		# Copy __name__ and __doc__ from decorated function to decorator function
 		deploy.__name__ = fn.__name__
 		if fn.__doc__: deploy.__doc__ = fn.__doc__
