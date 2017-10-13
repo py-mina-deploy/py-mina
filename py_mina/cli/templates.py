@@ -36,7 +36,7 @@ def restart():
 	Restarts application on remote server
 	"""
 
-	run('echo "Restarting application"')
+	pass
 
 
 @deploy_task(on_launch=restart)
@@ -48,9 +48,8 @@ def deploy():
 	git_clone()
 	link_shared_paths()
 
-	run('echo "Deploying application"')
 
-	# ... your deploy commands ...
+	run('pwd && ls -lah')
 
 
 @setup_task
@@ -59,7 +58,5 @@ def setup():
 	Runs setup process on remote server
 	"""
 
-	run('echo "Deploy setup"')
-
-	# ... your setup commands ...
+	pass
 '''
