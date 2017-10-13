@@ -81,6 +81,8 @@ def deploy_task(on_launch=None):
 				6) Show deploy stats
 			"""
 			
+			echo_task('Running "%s" task' % fn.__name__)
+
 			check_deploy_config()
 
 			with settings(colorize_errors=True):

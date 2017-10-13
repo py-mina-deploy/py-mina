@@ -162,7 +162,6 @@ def move_build_to_releases():
 	run('mv %s %s' % (fetch('build_to'), fetch('release_to')))
 
 
-
 def link_release_to_current():
 	"""
 	Links shared paths to build dir
@@ -177,6 +176,7 @@ def link_release_to_current():
 
 	with cd(release_to):
 		run('ln -nfs %s %s' % (release_to, fetch('current_path')))
+
 
 def remove_build_path():
 	"""
@@ -210,35 +210,6 @@ ls -A1 | sort -rn | tail -n $remove | xargs rm -rf {}
 		''' % (releases_count, releases_count)
 
 		run(cmd)
-
-
-def print_deploy_stats():
-	release_number = fetch('release_number')
-	deploy_successful = state.get('deploy') == True and state.get('post') == True
-
-	# Status
-	print('\n')
-	if deploy_successful: 
-		print(green('Deploy finished.'))
-	else: 
-		print(red('Deploy failed.'))
-
-	# Subtasks
-	if fetch('verbose') or not deploy_successful:
-		print('\n')
-		echo_comment('[SUBTASKS]')
-		echo_comment('* pre_deploy: %s' % state.get('pre'))
-		echo_comment('* deploy: %s' % state.get('deploy'))
-		echo_comment('* post_deploy: %s' % state.get('post'))
-		echo_comment('* finallize: %s' % state.get('finallize'))
-		echo_comment('* launch: %s' % state.get('launch'))
-
-	# Release
-	if deploy_successful:
-		print('\n')
-		echo_comment('[RELEASE]')
-		echo_comment('* number: %s' % release_number)
-		echo_comment('* path: %s' % fetch('release_to'))
 
 
 ################################################################################
@@ -277,3 +248,33 @@ def rollback_release():
 				
 		else:
 			abort('Can\'t find previous release for rollback.')
+
+
+################################################################################
+# Print
+################################################################################
+
+
+def print_deploy_stats():
+	release_number = fetch('release_number')
+	deploy_successful = state.get('deploy') == True and state.get('post') == True
+
+	# Release
+	if deploy_successful:
+	# 	print('\n')
+	# 	echo_comment('-----> Release number: %s' % release_number)
+	# 	echo_comment('-----> Release path: %s' % fetch('release_to'))
+	# else:
+		echo_comment('\n-----> Subtask stats\n')
+		echo_status('pre_deploy', state.get('pre'))
+		echo_status('deploy', state.get('deploy'))
+		echo_status('post_deploy', state.get('post'))
+		echo_status('finallize', state.get('finallize'))
+		echo_status('launch', state.get('launch'))
+
+	# Status
+	print('\n')
+	if deploy_successful: 
+		print(green('Deploy finished.'))
+	else: 
+		print(red('Deploy failed.'))
