@@ -6,18 +6,35 @@ Console output
 from fabric.colors import *
 
 
-def echo_task(message):
-	print(yellow('=====> %s' % message))
+################################################################################
+# Head (system defined)
+################################################################################
 
 
-def echo_subtask(message):
+def echo_task(message, error=False):
+	color = red if error == True else yellow
+	
+	print(color('\n=====> %s' % message))
+
+
+def echo_subtask(message, error=False):
+	color = red if error == True else cyan
+
 	print(cyan('\n-----> %s' % message))
 
 
-def echo_comment(message):
-	print(blue(message))
+################################################################################
+# Body (user defined)
+################################################################################
 
 
-def echo_danger(message):
-	print(red(message))
+def echo_comment(message, error=False):
+	color = red if error == True else blue
 
+	print(color(message))
+
+
+def echo_status(message, error=False):
+	color = red if error == True else green
+
+	print(color(message))
