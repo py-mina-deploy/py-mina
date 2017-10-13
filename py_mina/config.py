@@ -25,15 +25,38 @@ config = _AttributeDict({
 	'farbric_config_settings': ['user', 'hosts', 'abort_on_prompts']
 })
 
+################################################################################
+# Attributes
+################################################################################
 
-################################################################################
-# Set config
-################################################################################
+
+def ensure(key):
+	"""
+	Ensures that config contains value for given key.
+	"""
+
+	if not key in config.keys():
+		raise EnsureConfigError('"%s" must be defined' % key)
+
+
+def fetch(key, default_value=None):
+	"""
+	Fetches config setting by given key.
+	Returns default_value if key is missing and default value is provided.
+	"""
+
+	if key in config.keys():
+		return config.get(key)
+	else:
+		if default_value != None:
+			return default_value
+		else:
+			raise FetchConfigError('"%s" is not defined' % key)
 
 
 def set(key, value):
 	"""
-	Set config setting.
+	Sets config setting value.
 	"""
 
 	if key in config.get('farbric_config_settings'):
@@ -57,16 +80,31 @@ set_config = set
 
 
 ################################################################################
-# Helpers
+# Check
 ################################################################################
 
 
 def check_deploy_config():
 	"""
-	Ensures required settings is config for deploy and setup tasks
+	Check required settings for deploy
 	"""
 
-	required_settings = ['user', 'hosts', 'deploy_to', 'repository', 'branch']
+	check_config(['user', 'hosts', 'deploy_to', 'repository', 'branch'])
+
+
+def check_setup_config():
+	"""
+	Check required settings for setup
+	"""
+
+	check_config(['user', 'hosts', 'deploy_to'])
+
+
+def check_config(required_settings=[]):
+	"""
+	Ensures required settings
+	"""
+
 	try:
 		for setting in required_settings:
 			ensure(setting)
@@ -77,28 +115,4 @@ Required settings: {0}
 Current config: {1}
 		'''.format(required_settings, config)
 
-		raise BadConfigError(msg)
-
-
-def fetch(key, default_value=None):
-	"""
-	Fetches config setting by given key.
-	Returns default_value if key is missing and default value is provided.
-	"""
-
-	if key in config.keys():
-		return config.get(key)
-	else:
-		if default_value != None:
-			return default_value
-		else:
-			raise FetchConfigError('"%s" is not defined' % key)
-
-
-def ensure(key):
-	"""
-	Ensures that config contains value for given key.
-	"""
-
-	if not key in config.keys():
-		raise EnsureConfigError('"%s" must be defined' % key)
+		raise BadConfigError(msg)	
