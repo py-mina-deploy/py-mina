@@ -12,7 +12,7 @@ Your server needs to be properly configured for py_mina to work. Requirements fo
 - installed python
 - installed pip
 
-### Step 1: Create a `deploy/deploy.py`
+### Step 1: Create deployfile
 
 In your project, type `py_mina init` to create a sample of this file.
 
