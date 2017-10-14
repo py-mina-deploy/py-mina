@@ -1,6 +1,5 @@
 # Api docs
 
-
 * [Decorators](decorators.md)
-* [Available tasks](tasks.md)
-
+* [Tasks](tasks.md)
+* [Commands](commands.md)
