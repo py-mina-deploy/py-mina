@@ -10,8 +10,8 @@ from deploy import *
 # Settings - connection
 
 
-set('user', 'deploy') # ssh user
-set('hosts', ['example.com']) # remote hosts
+set('user', 'deploy')
+set('hosts', ['example.com'])
 
 
 # Settings - application
