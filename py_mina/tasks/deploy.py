@@ -118,7 +118,7 @@ def create_build_path():
 
 	echo_subtask("Creating build path")
 
-	with settings(warn_only=True):
+	with settings(hide('warnings'), warn_only=True):
 		build_path = fetch('build_to')
 
 		if run('test -d %s' % build_path).failed:
@@ -273,9 +273,13 @@ def rollback_release():
 
 def time_string(start_time):
 	stop_time = timeit.default_timer()
-	delta_time = stop_time - kwargs.get('start_time')
+	delta_time = stop_time - start_time
 
 	return '(time: %s seconds)' % delta_time
+
+
+def print_verbose():
+	pass
 
 
 def print_deploy_stats(task_name, start_time):
@@ -284,8 +288,11 @@ def print_deploy_stats(task_name, start_time):
 	for error_state in list(filter(lambda x: type(x) == Exception, state.keys())):
 		echo_comment(('\n[ERROR]\n%s\n' % state.get(error_state)), error=True)
 
+	if fetch('verbose') == True:
+		print_verbose()
+
 	if state.get('success') == True:
-		print(yellow('\n-----> Release number: %s\n' % fetch('release_number')))
+		print(yellow('\n-----> Release number: %s' % fetch('release_number')))
 		echo_status('\n=====> Task "%s" finished %s\n' % status_tuple)
 	else:
 		echo_status('\n=====> Task "%s" failed %s\n' % status_tuple, error=True)

@@ -29,12 +29,14 @@ def check_setup_config():
 ################################################################################
 
 
-def create_required():
+def create_required_structure():
 	"""
-	Creates `py_mina` required structure in `deploy_to` path
+	Creates required folders (tmp, releases, shared) in `deploy_to` path
 	"""
 
-	echo_subtask('Creating required folders')
+	ensure('deploy_to')
+
+	echo_subtask('Creating required structure')
 
 	run('mkdir -p %s' % fetch('deploy_to'))
 
@@ -42,10 +44,14 @@ def create_required():
 		run('mkdir -p %s' % os.path.join(fetch('deploy_to'), required_path))
 
 
-def create_shared():
+def create_shared_paths():
 	"""
-	Creates shared dirs and touches shared filesp
+	Creates shared dirs and touches shared files
 	"""
+	
+	ensure('shared_path')
+	ensure('shared_dirs')
+	ensure('shared_files')
 
 	echo_subtask('Creating shared paths')
 
@@ -92,7 +98,6 @@ def add_repo_to_known_hosts():
 		repo_port_match = re.search(r':([0-9]+)', maybe_repository)
 		repo_port = repo_port_match.group(1) if bool(repo_port_match) == True else 22
 
-
 		echo_subtask('Adding repository to known hosts')
 
 		add_to_known_hosts(repo_host, repo_port)
@@ -101,7 +106,11 @@ def add_repo_to_known_hosts():
 def add_host_to_known_hosts():
 	"""
 	Adds current host to the known hosts
+
+	`fabric3` library sets to `env.host_string` current host where task is executed
 	"""
+
+	ensure('hosts')
 
 	echo_subtask('Adding current host to known hosts')
 
@@ -123,6 +132,17 @@ fi'''.format(host, port)
 ################################################################################
 
 
+def print_verbose():
+	"""
+	TODO:
+
+	=> what to show?
+
+	"""
+
+	pass
+
+
 def print_setup_stats(task_name, **kwargs):
 	if 'start_time' in kwargs:
 		stop_time = timeit.default_timer()
@@ -132,6 +152,9 @@ def print_setup_stats(task_name, **kwargs):
 
 	time_string = '(time: %s seconds)' % delta_time
 	status_tuple = (task_name, time_string)
+
+	if fetch('verbose') == True:
+		print_verbose()
 
 	if 'error' in kwargs:
 		echo_comment(('\n[FATAL ERROR]\n\n%s' % kwargs.get('error')), error=True)

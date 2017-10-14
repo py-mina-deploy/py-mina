@@ -5,7 +5,7 @@ Git tasks
 
 from __future__ import with_statement
 import os
-from fabric.api import settings, hide, run, cd, 
+from fabric.api import settings, hide, run, cd
 from py_mina.echo import echo_subtask, echo_task
 from py_mina.config import fetch, ensure
 

@@ -8,7 +8,6 @@ import time
 from fabric.api import env
 from py_mina.utils import _AttributeDict
 import py_mina.state
-from py_mina.exceptions import FetchConfigError, EnsureConfigError, BadConfigError
 
 
 ################################################################################
@@ -25,6 +24,7 @@ config = _AttributeDict({
 	'farbric_config_settings': ['user', 'hosts', 'abort_on_prompts']
 })
 
+
 ################################################################################
 # Attributes
 ################################################################################
@@ -36,7 +36,7 @@ def ensure(key):
 	"""
 
 	if not key in config.keys():
-		raise EnsureConfigError('"%s" must be defined' % key)
+		raise Exception('"%s" must be defined' % key)
 
 
 def fetch(key, default_value=None):
@@ -50,7 +50,7 @@ def fetch(key, default_value=None):
 		if default_value != None:
 			return default_value
 		else:
-			raise FetchConfigError('"%s" is not defined' % key)
+			raise Exception('"%s" is not defined' % key)
 
 
 def set(key, value):
@@ -94,4 +94,4 @@ def check_config(required_settings=[]):
 	except EnsureConfigError:
 		msg = 'Bad config!\nRequired settings: {0}\nCurrent config: {1}'
 
-		raise BadConfigError(msg.format(required_settings, config))	
+		raise Exception(msg.format(required_settings, config))	

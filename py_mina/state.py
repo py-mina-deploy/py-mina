@@ -4,7 +4,6 @@ Deploy state manager
 
 
 from py_mina.utils import _AttributeDict
-from py_mina.exceptions import StateError
 
 
 ################################################################################
@@ -31,7 +30,7 @@ def set(key, value):
 	if key in state.keys():
 		state[key] = value
 	else:
-		raise StateError('State "%s" is not defined' % key)
+		raise Exception('State "%s" is not defined' % key)
 
 
 # Alias to prevent conflict when importing "py_mina.config" and "py_mina.state"

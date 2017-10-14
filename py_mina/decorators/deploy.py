@@ -34,7 +34,7 @@ def deploy_task(on_success=None):
 			except Exception as error: 
 				set_state('pre_deploy', error)
 
-				raise error # raise upper to 'deploy'
+				raise error # escalate exception to 'deploy' function
 
 		def _deploy(*args):
 			if state.get('pre_deploy') == True:
@@ -45,7 +45,7 @@ def deploy_task(on_success=None):
 				except Exception as error: 
 					set_state('deploy', error)
 
-					raise error # raise upper to 'deploy'
+					raise error # escalate exception to 'deploy'
 
 
 		def _post_deploy():
@@ -57,7 +57,7 @@ def deploy_task(on_success=None):
 				except Exception as error: 
 					set_state('post_deploy', error)
 
-					raise error # raise upper to 'deploy'
+					raise error # escalate exception to 'deploy'
 
 
 		def _finallize_deploy():
@@ -109,7 +109,8 @@ def deploy_task(on_success=None):
 					_finallize_deploy()
 
 				_on_success_deploy()
-				print_deploy_stats(start_time=start_time)
+				
+				print_deploy_stats(wrapped_function_name, start_time=start_time)
 
 		
 		# Copy __name__ and __doc__ from decorated function to decorator function

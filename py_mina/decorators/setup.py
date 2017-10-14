@@ -17,6 +17,17 @@ def setup_task(wrapped_function):
 
 	wrapped_function_name = wrapped_function.__name__
 
+
+	def _pre_setup():
+		"""
+		Creates required structure and adds hosts to known hosts
+		"""
+
+		create_required_structure()				
+		add_repo_to_known_hosts()
+		add_host_to_known_hosts()
+
+
 	def setup(*args):
 		"""
 		Runs setup process on remote server
@@ -27,18 +38,15 @@ def setup_task(wrapped_function):
 			5) runs wrpapped function
 		"""
 
-		echo_task('Running "%s" task' % wrapped_function_name)
+		check_setup_config()
 
 		start_time = timeit.default_timer()
 
-		check_setup_config()
+		echo_task('Running "%s" task' % wrapped_function_name)
 
 		with settings(show('debug'), hide('output'), colorize_errors=True):
 			try:
-				create_required()
-				create_shared()
-				add_repo_to_known_hosts()
-				add_host_to_known_hosts()
+				_pre_setup()
 				wrapped_function(*args)
 				print_setup_stats(wrapped_function_name, start_time=start_time)
 			except Exception as e:
