@@ -20,12 +20,13 @@ set('hosts', ['localhost'])
 # Settings - application
 
 
+set('verbose', True)
 set('deploy_to', '/var/www/example_application')
 set('repository', 'https://github.com/py-mina-deploy/py-mina')
 set('branch', 'master')
 
 
-# Settings - deploy
+# Settings - shared
 
 
 set('shared_dirs', [])
