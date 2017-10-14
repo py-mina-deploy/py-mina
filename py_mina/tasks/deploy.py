@@ -271,9 +271,18 @@ def print_verbose():
 	pass
 
 
+def find_state_errors(x):
+	if x == 'success': return False
+	return state.get(x) not in [True, None]
+
 def print_deploy_stats(task_name, start_time):
-	for error_state in list(filter(lambda x: type(x) == Exception, state.keys())):
-		echo_comment(('\n[ERROR]\n%s\n' % state.get(error_state)), error=True)
+	error_states = list(filter(find_state_errors, state.keys()))
+
+	if len(error_states) > 0:
+		echo_task('Deploy errors', error=True)
+
+		for error_state in error_states:
+			echo_comment(('\n[ERROR]\n%s\n' % state.get(error_state)), error=True)
 
 	if fetch('verbose') == True:
 		print_verbose()

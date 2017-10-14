@@ -34,7 +34,7 @@ def deploy_task(on_success=None):
 			except Exception as error: 
 				set_state('pre_deploy', error)
 
-				raise error # escalate exception to 'deploy' function
+				raise error # escalate exception to 'deploy_wrapper' function
 
 		def _deploy(*args):
 			if state.get('pre_deploy') == True:
@@ -45,7 +45,7 @@ def deploy_task(on_success=None):
 				except Exception as error: 
 					set_state('deploy', error)
 
-					raise error # escalate exception to 'deploy'
+					raise error # escalate exception to 'deploy_wrapper' function
 
 
 		def _post_deploy():
@@ -57,11 +57,14 @@ def deploy_task(on_success=None):
 				except Exception as error: 
 					set_state('post_deploy', error)
 
-					raise error # escalate exception to 'deploy'
+					raise error # escalate exception to 'deploy_wrapper' function
 
 
 		def _finallize_deploy():
-			try: 
+			if not state.get('success') == True:
+				echo_task('Failed deploy cleaning up')
+
+			try:
 				cleanup_releases()
 				remove_build_path()
 				unlock()
@@ -79,7 +82,7 @@ def deploy_task(on_success=None):
 					set_state('on_success', error)
 
 
-		def deploy(*args):
+		def deploy_wrapper(*args):
 			"""
 			Runs deploy process on remote server
 				1) Pre deploy (lock, build path, latest_release)
@@ -103,21 +106,19 @@ def deploy_task(on_success=None):
 					_post_deploy()
 					set_state('success', True)
 				except Exception as error:
-					echo_comment('\n\n[FATAL ERROR]\n\n%s' % error, error=True)
-					set_state('success', error)					
-				finally:
-					_finallize_deploy()
+					echo_comment(('\n[ERROR]\n%s\n' % error), error=True)
+					set_state('success', error)
 
+				_finallize_deploy()
 				_on_success_deploy()
-				
 				print_deploy_stats(wrapped_function_name, start_time=start_time)
 
 		
 		# Copy __name__ and __doc__ from decorated function to decorator function
-		deploy.__name__ = wrapped_function_name or 'deploy'
-		if wrapped_function.__doc__: deploy.__doc__ = wrapped_function.__doc__
+		deploy_wrapper.__name__ = wrapped_function_name or 'deploy'
+		if wrapped_function.__doc__: deploy_wrapper.__doc__ = wrapped_function.__doc__
 
 		# Decorate with `fabric3` task decorator
-		return task(deploy)
+		return task(deploy_wrapper)
 
 	return deploy_task_wrapper
