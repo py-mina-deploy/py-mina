@@ -11,6 +11,7 @@ from py_mina.config import fetch, ensure, check_config
 from fabric.api import run, settings, env, cd, hide
 from py_mina.echo import *
 
+
 ################################################################################
 # Check
 ################################################################################
@@ -55,7 +56,9 @@ def create_shared_paths():
 
 	echo_subtask('Creating shared paths')
 
-	with cd(fetch('shared_path')):
+	shared_path = fetch('shared_path')
+
+	with cd(shared_path):
 		for sdir in fetch('shared_dirs'):
 			run('mkdir -p %s' % sdir)
 
@@ -68,8 +71,8 @@ def create_shared_paths():
 			run('touch ' + sfile)
 			run('chmod g+rx,u+rwx ' + sfile)
 
-			recommendation_tuple = (sfile, env.host_string)
-			echo_status('Don\'t forget to update %s on %s' % recommendation_tuple , error=True)
+			recommendation_tuple = (env.host_string, os.path.join(shared_path, sfile))
+			echo_status('\n=====> Don\'t forget to update shared file \n[%s] %s\n' % recommendation_tuple , error=True)
 
 
 ################################################################################
