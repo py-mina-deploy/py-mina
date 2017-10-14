@@ -4,11 +4,26 @@ Deploy tasks
 
 from __future__ import with_statement
 import os
-from fabric.colors import red, green
+import timeit
+from fabric.colors import red, green, yellow
 from fabric.api import *
-from py_mina.config import fetch, ensure, set
+from py_mina.config import fetch, ensure, set, check_config
 from py_mina.state import state
 from py_mina.echo import *
+
+
+################################################################################
+# Config
+################################################################################
+
+
+def check_deploy_config():
+	"""
+	Check required config settings for deploy task
+	"""
+
+	check_config(['user', 'hosts', 'deploy_to', 'repository', 'branch'])
+
 
 
 ################################################################################
@@ -20,10 +35,10 @@ def check_lock():
 	"""
 	Aborts deploy if lock file is found.
 	"""
-
-	ensure('deploy_to')
 	
-	with settings(hide('warnings'), warn_only=True), cd(fetch('deploy_to')):
+	echo_subtask("Checking `deploy.lock` file presence")
+
+	with cd(fetch('deploy_to')), settings(hide('everything'), warn_only=True):
 		if run('test -f deploy.lock').succeeded:
 			abort("Another deploy in progress")
 
@@ -35,7 +50,7 @@ def lock():
 
 	ensure('build_to')
 
-	echo_subtask("Creating deploy.lock")
+	echo_subtask("Creating `deploy.lock` file")
 
 	with cd(fetch('deploy_to')):
 		run('touch deploy.lock')
@@ -46,9 +61,7 @@ def unlock():
 	Forces a deploy unlock.
 	"""
 
-	ensure('deploy_to')
-
-	echo_subtask("Removing deploy.lock")
+	echo_subtask("Removing `deploy.lock` file")
 
 	with cd(fetch('deploy_to')):
 		run('rm -f deploy.lock')
@@ -64,15 +77,18 @@ def discover_latest_release():
 	Connects to remote server and discovers next release number
 	"""
 
+	ensure('releases_path')
+
 	releases_path = fetch('releases_path')
 
 	echo_subtask("Discovering latest release number")
 
-	# Get release number
+	# Get latest release number
 	with settings(hide('warnings'), warn_only=True):
 		if run('test -d %s' % releases_path).failed:
-			run('mkdir -p %s' % releases_path)
 			last_release_number = 0
+			
+			run('mkdir -p %s' % releases_path)
 		else:
 			releases_respond = run('ls -1p %s | sed "s/\///g"' % releases_path)
 			releases_dirs = list(filter(lambda x: len(x) != 0, releases_respond.split('\r\n')))
@@ -157,7 +173,7 @@ def move_build_to_releases():
 	ensure('build_to')
 	ensure('release_to')
 
-	echo_subtask("Moving build to releases")
+	echo_subtask('Moving from build path to release path')
 
 	run('mv %s %s' % (fetch('build_to'), fetch('release_to')))
 
@@ -182,6 +198,7 @@ def remove_build_path():
 	"""
 	Removes a temporary build dir
 	"""
+
 	ensure('build_to')
 	
 	echo_subtask("Removing build path")
@@ -245,7 +262,6 @@ def rollback_release():
 				run('rm -rf %s/%s' % (releases_path, current_release))
 			else:
 				abort('Can\'t find current release for remove.')
-				
 		else:
 			abort('Can\'t find previous release for rollback.')
 
@@ -255,26 +271,22 @@ def rollback_release():
 ################################################################################
 
 
-def print_deploy_stats():
-	release_number = fetch('release_number')
-	deploy_successful = state.get('deploy') == True and state.get('post') == True
+def time_string(start_time):
+	stop_time = timeit.default_timer()
+	delta_time = stop_time - kwargs.get('start_time')
 
-	# Release
-	if deploy_successful:
-	# 	print('\n')
-	# 	echo_comment('-----> Release number: %s' % release_number)
-	# 	echo_comment('-----> Release path: %s' % fetch('release_to'))
-	# else:
-		echo_comment('\n-----> Subtask stats\n')
-		echo_status('pre_deploy', state.get('pre'))
-		echo_status('deploy', state.get('deploy'))
-		echo_status('post_deploy', state.get('post'))
-		echo_status('finallize', state.get('finallize'))
-		echo_status('launch', state.get('launch'))
+	return '(time: %s seconds)' % delta_time
 
-	# Status
-	print('\n')
-	if deploy_successful: 
-		print(green('Deploy finished.'))
-	else: 
-		print(red('Deploy failed.'))
+
+def print_deploy_stats(task_name, start_time):
+	status_tuple = (task_name, time_string(start_time))
+
+	for error_state in list(filter(lambda x: type(x) == Exception, state.keys())):
+		echo_comment(('\n[ERROR]\n%s\n' % state.get(error_state)), error=True)
+
+	if state.get('success') == True:
+		print(yellow('\n-----> Release number: %s\n' % fetch('release_number')))
+		echo_status('\n=====> Task "%s" finished %s\n' % status_tuple)
+	else:
+		echo_status('\n=====> Task "%s" failed %s\n' % status_tuple, error=True)
+

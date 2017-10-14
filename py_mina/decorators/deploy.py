@@ -4,70 +4,79 @@ Decorator for deploy task
 
 
 from __future__ import with_statement
+import timeit
 from fabric.api import task, settings
-from py_mina.config import check_deploy_config
 from py_mina.state import state, set_state
 from py_mina.exceptions import *
 from py_mina.tasks.deploy import *
 from py_mina.echo import echo_task
 
-def deploy_task(on_launch=None):
+def deploy_task(on_success=None):
 	"""
 	Deploy task arguments decorator
 	"""
 
-	def deploy_task_fn(fn):
+	def deploy_task_wrapper(wrapped_function):
 		"""
-		Deploy task function decorator
+		Deploy task decorator
 		"""
 
-		def pre_deploy():
-			with settings(abort_exception=PreDeployError):
-				try: 
-					check_lock()
-					lock()
-					create_build_path()
-					discover_latest_release()
-
-					set_state('pre', True)
-				except PreDeployError: 
-					set_state('pre', False)
+		wrapped_function_name = wrapped_function.__name__
 
 
-		def post_deploy():
-			with settings(abort_exception=PostDeployError):
+		def _pre_deploy():
+			try: 
+				check_lock()
+				lock()
+				create_build_path()
+				discover_latest_release()
+				set_state('pre_deploy', True)
+			except Exception as error: 
+				set_state('pre_deploy', error)
+
+				raise error # raise upper to 'deploy'
+
+		def _deploy(*args):
+			if state.get('pre_deploy') == True:
 				try:
-					if state.get('deploy') == True:
-						move_build_to_releases()
-						link_release_to_current()
+					with cd(fetch('build_to')):
+						wrapped_function(*args)
+					set_state('deploy', True)
+				except Exception as error: 
+					set_state('deploy', error)
 
-					set_state('post', True)
-				except PostDeployError: 
-					set_state('post', False)
+					raise error # raise upper to 'deploy'
 
 
-		def finallize_deploy():
-			with settings(abort_exception=FinallizeDeployError):
+		def _post_deploy():
+			if state.get('deploy') == True:
+				try:
+					move_build_to_releases()
+					link_release_to_current()
+					set_state('post_deploy', True)
+				except Exception as error: 
+					set_state('post_deploy', error)
+
+					raise error # raise upper to 'deploy'
+
+
+		def _finallize_deploy():
+			try: 
+				cleanup_releases()
+				remove_build_path()
+				unlock()
+				set_state('finallize', True)
+			except Exception as error:
+				set_state('finallize', error)
+
+
+		def _on_success_deploy():
+			if  state.get('success') == True and callable(on_success):
 				try: 
-					if state.get('deploy') == True:
-						cleanup_releases()
-					remove_build_path()
-					unlock()
-
-					set_state('finallize', True)
-				except Exception:
-					set_state('finallize', False)
-
-
-		def launch():
-			if not on_launch == None and callable(on_launch):
-				with settings(abort_exception=LaunchError):
-					try: 
-						on_launch()
-
-						set_state('launch', True)
-					except LaunchError:
-						set_state('launch', False)
+					on_success()
+					set_state('on_success', True)
+				except Exception as error:
+					set_state('on_success', error)
 
 
 		def deploy(*args):
@@ -77,42 +86,37 @@ def deploy_task(on_launch=None):
 				2) Deploy
 				3) Post deploy (move to releases, link release to current)
 				4) Finallize deploy (cleanup, remove build path, unlock)
-				5) Launch application
-				6) Show deploy stats
+				5) Runs `on_success` callback function if deploy successfully finished
+				6) Shows deploy stats
 			"""
 			
-			echo_task('Running "%s" task' % fn.__name__)
+			echo_task('Running "%s" task' % wrapped_function_name)
+
+			start_time = timeit.default_timer()
 
 			check_deploy_config()
 
 			with settings(colorize_errors=True):
 				try:
-					pre_deploy()
-
-					with cd(fetch('build_to')), settings(abort_exception=DeployError):
-						try:
-							fn(*args)
-							set_state('deploy', True)
-						except DeployError: 
-							set_state('deploy', False)
-
-					post_deploy()
+					_pre_deploy()
+					_deploy(*args)
+					_post_deploy()
+					set_state('success', True)
+				except Exception as error:
+					echo_comment('\n\n[FATAL ERROR]\n\n%s' % error, error=True)
+					set_state('success', error)					
 				finally:
-					finallize_deploy()
+					_finallize_deploy()
 
-			# Launch application if build succeeded
-			if state.get('deploy') == True and state.get('post') == True: 
-				launch()
-
-			# Show deploy stats
-			print_deploy_stats()
+				_on_success_deploy()
+				print_deploy_stats(start_time=start_time)
 
 		
 		# Copy __name__ and __doc__ from decorated function to decorator function
-		deploy.__name__ = fn.__name__
-		if fn.__doc__: deploy.__doc__ = fn.__doc__
+		deploy.__name__ = wrapped_function_name
+		if wrapped_function.__doc__: deploy.__doc__ = wrapped_function.__doc__
 
-		# Decorate with "fabric" @task decorator
+		# Decorate with `fabric3` task decorator
 		return task(deploy)
 
-	return deploy_task_fn
+	return deploy_task_wrapper

@@ -5,7 +5,7 @@ Git tasks
 
 from __future__ import with_statement
 import os
-from fabric.api import *
+from fabric.api import settings, hide, run, cd, 
 from py_mina.echo import echo_subtask, echo_task
 from py_mina.config import fetch, ensure
 
@@ -28,16 +28,14 @@ def maybe_clone_git_repository():
 	ensure('repository')
 	ensure('scm')
 
+	echo_subtask('Ensures git repository presence')
 
-	scm = fetch('scm')
+	with settings(hide('warnings'), warn_only=True):
 
-	with settings(warn_only=True):
-		echo_subtask("Ensure git repository")
-
-		if run('test -d %s' % scm).failed:
+		if run('test -d %s' % fetch('scm')).failed:
 			echo_subtask("Cloning bare git repository")
 
-			run('git clone {0} {1} --bare'.format(fetch('repository'), scm))
+			run('git clone {0} {1} --bare'.format(fetch('repository'), fetch('scm')))
 
 
 def fetch_new_commits():
@@ -57,14 +55,14 @@ def fetch_new_commits():
 
 def use_git_branch():
 	"""
-	Clone repository to "build_to"
+	Clones repository to build dir
 	"""
 
 	ensure('build_to')
 	ensure('scm')
 	ensure('branch')
 
-	echo_subtask("Copy code from repository to build folder")
+	echo_subtask("Copying code from repository to build folder")
 
 	with cd(fetch('build_to')):
 		run('git clone {0} . --recursive --branch {1}'.format(fetch('scm'), fetch('branch')))

@@ -12,15 +12,19 @@ class StateError(Exception):
 ################################################################################
 
 
-class BadConfigError(Exception):
+class ConfigError(Exception):
 	pass
 
 
-class FetchConfigError(Exception):
+class BadConfigError(ConfigError):
 	pass
 
 
-class EnsureConfigError(Exception):
+class FetchConfigError(ConfigError):
+	pass
+
+
+class EnsureConfigError(ConfigError):
 	pass
 
 
@@ -38,27 +42,25 @@ class SetupError(Exception):
 ################################################################################
 
 
-class PreDeployError(Exception):
-	pass
-
-
 class DeployError(Exception):
 	pass
 
 
-class PostDeployError(Exception):
+class OnPreDeployError(DeployError):
+	pass
+
+
+class OnDeployError(DeployError):
+	pass
+
+
+class OnPostDeployError(DeployError):
 	pass
 
 	
-class FinallizeDeployError(Exception):
+class OnFinallizeDeployError(DeployError):
 	pass
 
 
-################################################################################
-# Launch
-################################################################################
-
-
-class LaunchError(Exception):
+class OnDeploySuccessError(DeployError):
 	pass
-

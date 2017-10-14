@@ -17,7 +17,7 @@ from py_mina.exceptions import FetchConfigError, EnsureConfigError, BadConfigErr
 
 
 config = _AttributeDict({
-	'keep_releases': 5,
+	'keep_releases': 7,
 	'shared_files': [],
 	'shared_dirs': [],
 	'abort_on_prompts': False,
@@ -32,7 +32,7 @@ config = _AttributeDict({
 
 def ensure(key):
 	"""
-	Ensures that config contains value for given key.
+	Ensures presence of config setting
 	"""
 
 	if not key in config.keys():
@@ -41,8 +41,7 @@ def ensure(key):
 
 def fetch(key, default_value=None):
 	"""
-	Fetches config setting by given key.
-	Returns default_value if key is missing and default value is provided.
+	Gets and ensures config setting or returns `default_value` if provided
 	"""
 
 	if key in config.keys():
@@ -56,7 +55,7 @@ def fetch(key, default_value=None):
 
 def set(key, value):
 	"""
-	Sets config setting value.
+	Sets config setting
 	"""
 
 	if key in config.get('farbric_config_settings'):
@@ -75,7 +74,7 @@ def set(key, value):
 		config.update({ key: value })
 
 
-# Alias to prevent conflict when importing "py_mina.config" and "py_mina.state"
+# Alias to prevent conflict when importing "py_mina.config" and "py_mina.state" in one file
 set_config = set
 
 
@@ -84,35 +83,15 @@ set_config = set
 ################################################################################
 
 
-def check_deploy_config():
-	"""
-	Check required settings for deploy
-	"""
-
-	check_config(['user', 'hosts', 'deploy_to', 'repository', 'branch'])
-
-
-def check_setup_config():
-	"""
-	Check required settings for setup
-	"""
-
-	check_config(['user', 'hosts', 'deploy_to'])
-
-
 def check_config(required_settings=[]):
 	"""
-	Ensures required settings
+	Ensures required settings in cofig
 	"""
 
 	try:
 		for setting in required_settings:
 			ensure(setting)
 	except EnsureConfigError:
-		msg = '''
-Bad config! 
-Required settings: {0}
-Current config: {1}
-		'''.format(required_settings, config)
+		msg = 'Bad config!\nRequired settings: {0}\nCurrent config: {1}'
 
-		raise BadConfigError(msg)	
+		raise BadConfigError(msg.format(required_settings, config))	
