@@ -6,7 +6,7 @@ Decorator for setup task
 from __future__ import with_statement
 import timeit
 from fabric.api import task, settings, show, hide
-from py_mina.tasks.setup import *
+from py_mina.subtasks.setup import *
 from py_mina.echo import echo_task, print_task_stats
 
 
@@ -32,10 +32,9 @@ def setup_task(wrapped_function):
 		"""
 		Runs setup process on remote server
 			1) check required settings (user, host, deploy_to)
-			2) creates required dirs (releases, shared, tmp)   
-			3) creates shared dirs and files
-			4) adds repo and host to known hosts if possible
-			5) runs wrpapped function
+			2) creates required structure (releases, shared, tmp)   
+			3) adds repo and host to known hosts if possible
+			4) runs wrpapped function
 		"""
 
 		check_setup_config()

@@ -19,7 +19,7 @@ In your project, type `py_mina init` to create a sample of this file.
     $ py_mina init
     Created deploy/deploy.py.
 
-This is just a python file with tasks! See [How to write your own tasks](writing_your_own_tasks.md) for
+This is just a python file with tasks! See [How to write your own tasks](tasks.md#writing-your-own-tasks) for
 more info on what *deploy.py* is. You will want to at least configure your
 server:
 

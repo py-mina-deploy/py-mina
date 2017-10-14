@@ -7,7 +7,7 @@ from __future__ import with_statement
 import timeit
 from fabric.api import task, settings
 from py_mina.state import state, set_state
-from py_mina.tasks.deploy import *
+from py_mina.subtasks.deploy import *
 from py_mina.echo import echo_task
 
 
@@ -93,11 +93,11 @@ def deploy_task(on_success=None):
 				6) Shows deploy stats
 			"""
 			
-			echo_task('Running "%s" task' % wrapped_function_name)
-
 			start_time = timeit.default_timer()
 
 			check_deploy_config()
+
+			echo_task('Running "%s" task' % wrapped_function_name)
 
 			with settings(colorize_errors=True):
 				try:

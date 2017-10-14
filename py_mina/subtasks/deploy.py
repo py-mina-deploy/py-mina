@@ -24,15 +24,14 @@ def check_deploy_config():
 	check_config(['user', 'hosts', 'deploy_to', 'repository', 'branch'])
 
 
-
 ################################################################################
-# Lockfile
+# Pre deploy hooks
 ################################################################################
 
 
 def check_lock():
 	"""
-	Aborts deploy if lock file is found.
+	Aborts deploy if lock file is found
 	"""
 	
 	echo_subtask("Checking `deploy.lock` file presence")
@@ -44,7 +43,8 @@ def check_lock():
 
 def lock():
 	"""
-	Locks deploy. Parallel deploys are not allowed.
+	Locks deploy
+	Parallel deploys are not allowed
 	"""
 
 	ensure('build_to')
@@ -55,20 +55,24 @@ def lock():
 		run('touch deploy.lock')
 
 
-def unlock():
+def create_build_path():
 	"""
-	Forces a deploy unlock.
+	Creates tmp dir for building app. 
+
+	Folder will be:
+		* deleted -> if build fails
+		* moved to releases -> if build succeeds
 	"""
+	
+	ensure('build_to')
 
-	echo_subtask("Removing `deploy.lock` file")
+	echo_subtask("Creating build path")
 
-	with cd(fetch('deploy_to')):
-		run('rm -f deploy.lock')
+	with settings(hide('warnings'), warn_only=True):
+		build_path = fetch('build_to')
 
-
-################################################################################
-# Deploy
-################################################################################
+		if run('test -d %s' % build_path).failed:
+			run('mkdir -p %s' % build_path)
 
 
 def discover_latest_release():
@@ -104,24 +108,9 @@ def discover_latest_release():
 	set('release_to', os.path.join(releases_path, str(release_number)))
 
 
-def create_build_path():
-	"""
-	Creates tmp dir for building app. 
-
-	Folder will be:
-		* deleted -> if build fails
-		* moved to releases -> if build succeeds
-	"""
-	
-	ensure('build_to')
-
-	echo_subtask("Creating build path")
-
-	with settings(hide('warnings'), warn_only=True):
-		build_path = fetch('build_to')
-
-		if run('test -d %s' % build_path).failed:
-			run('mkdir -p %s' % build_path)
+################################################################################
+# Deploy
+################################################################################
 
 
 def link_shared_paths():
@@ -160,13 +149,13 @@ def link_shared_paths():
 
 
 ################################################################################
-# POST Deploy
+# Post deploy hooks
 ################################################################################
 
 
 def move_build_to_releases():
 	"""
-	Moves tmp build folder to releases dir
+	Moves current build folder to releases path
 	"""
 
 	ensure('build_to')
@@ -179,7 +168,7 @@ def move_build_to_releases():
 
 def link_release_to_current():
 	"""
-	Links shared paths to build dir
+	Creates current release symlink in `deploy_to` path
 	"""
 
 	ensure('release_to')
@@ -193,22 +182,13 @@ def link_release_to_current():
 		run('ln -nfs %s %s' % (release_to, fetch('current_path')))
 
 
-def remove_build_path():
-	"""
-	Removes a temporary build dir
-	"""
-
-	ensure('build_to')
-	
-	echo_subtask("Removing build path")
-
-	with settings(hide('stdout', 'warnings'), warn_only=True):
-		run('rm -rf %s' % fetch('build_to'))
-
+################################################################################
+# Finallize deploy hooks
+################################################################################
 
 def cleanup_releases():
 	"""
-	Clean up old releases.
+	Cleans up old releases
 	"""
 
 	ensure('releases_path')
@@ -225,6 +205,30 @@ remove=$((count > %s ? count - %s : 0))
 ls -A1 | sort -rn | tail -n $remove | xargs rm -rf {}'''
 
 		run(cmd % (releases_count, releases_count))
+
+
+def remove_build_path():
+	"""
+	Removes a temporary build dir
+	"""
+
+	ensure('build_to')
+	
+	echo_subtask("Removing build path")
+
+	with settings(hide('stdout', 'warnings'), warn_only=True):
+		run('rm -rf %s' % fetch('build_to'))
+
+
+def unlock():
+	"""
+	Forces a deploy unlock
+	"""
+
+	echo_subtask("Removing `deploy.lock` file")
+
+	with cd(fetch('deploy_to')):
+		run('rm -f deploy.lock')
 
 
 ################################################################################

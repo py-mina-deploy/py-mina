@@ -7,7 +7,7 @@ py_mina deployfile sample
 """
 
 from py_mina import *
-from py_mina.tasks import git_clone, create_shared_paths, link_shared_paths, rollback_release
+from py_mina.subtasks import git_clone, create_shared_paths, link_shared_paths, rollback_release
 
 
 # Settings - connection
