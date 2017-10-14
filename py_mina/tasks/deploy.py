@@ -267,25 +267,43 @@ def rollback_release():
 ################################################################################
 
 
+def get_error_states():
+	def find_error_states(x):
+		if x == 'success': return False
+		return state.get(x) not in [True, None]
+
+	return list(filter(find_error_states, state.keys()))
+
+
 def print_verbose():
-	pass
+	print(yellow('\n=====> Verbose subtasks stats\n'))
 
+	subtask_states = ['pre_deploy', 'deploy', 'post_deploy', 'finallize', 'on_success']
 
-def find_state_errors(x):
-	if x == 'success': return False
-	return state.get(x) not in [True, None]
+	for subtask_state_name in subtask_states:
+		state_value = state.get(subtask_state_name)
+
+		if state_value == None:
+			print_value = white('not invoked')
+		elif state_value == True:
+			print_value = green('success')
+		else:
+			print_value = red('failed')
+
+		print('%s - %s' % (yellow('* %s' % subtask_state_name), print_value))
+
 
 def print_deploy_stats(task_name, start_time):
-	error_states = list(filter(find_state_errors, state.keys()))
+	if fetch('verbose') == True:
+		print_verbose()
+
+	error_states = get_error_states()
 
 	if len(error_states) > 0:
 		echo_task('Deploy errors', error=True)
 
 		for error_state in error_states:
-			echo_comment(('\n[ERROR]\n%s\n' % state.get(error_state)), error=True)
-
-	if fetch('verbose') == True:
-		print_verbose()
+			echo_comment(('\n[ERROR]\n%s' % state.get(error_state)), error=True)
 
 	if state.get('success') == True:
 		print(yellow('\n-----> Release number: %s' % fetch('release_number')))
