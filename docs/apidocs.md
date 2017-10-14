@@ -2,4 +2,5 @@
 
 * [Decorators](decorators.md)
 * [Tasks](tasks.md)
-* [Commands](commands.md)
+* [Subtasks](subtasks.md)
+* [CLI](cli.md)

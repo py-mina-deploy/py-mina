@@ -115,7 +115,7 @@ def discover_latest_release():
 
 def link_shared_paths():
 	"""
-	Links paths set in shared_dirs and shared_files.
+	Links shared paths to build folder
 	"""
 
 	ensure('build_to')
@@ -238,7 +238,7 @@ def unlock():
 
 def rollback_release():
 	"""
-	Rollbacks the latest release.
+	Rollbacks current release to previous release
 	"""
 	
 	ensure('releases_path')
