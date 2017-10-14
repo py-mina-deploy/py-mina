@@ -19,6 +19,8 @@ class _AttributeDict(dict):
         >>> m = _ConfigAttributeDict({'foo': 'bar', 'biz': 'baz'})
         >>> m.first('wrong', 'incorrect', 'foo', 'biz')
         'bar'
+
+    Copied from 'fabric3'
     """
 
     def __getattr__(self, key):

@@ -7,9 +7,9 @@ from __future__ import with_statement
 import timeit
 from fabric.api import task, settings
 from py_mina.state import state, set_state
-from py_mina.exceptions import *
 from py_mina.tasks.deploy import *
 from py_mina.echo import echo_task
+
 
 def deploy_task(on_success=None):
 	"""
