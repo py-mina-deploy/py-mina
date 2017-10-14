@@ -15,7 +15,7 @@ def setup_application():
 
 Execution flow:
 
-1. Checks provided config for required settings
+1. Checks config for required settings
 2. Creates required structure/directories (`tmp`, `releases`, `shared`) in `$deploy_to` path
 3. Adds repository and current host to `~/.ssh/known_hosts` if possible
 4. Executes decorated function (in our case `setup_application`)
@@ -42,7 +42,7 @@ def deploy_application():
 
 Execution flow:
 
-1. Checks provided config for required settings
+1. Checks config for required settings
 2. Runs [pre_deploy](#pre_deploy) hook
 3. Executes decorated function (in our case `deploy_application`) if [pre_deploy](#pre_deploy) hook succeeded 
 4. Runs `post_deploy` hook if decorated function (in our case `deploy_application`) execution succeeded
