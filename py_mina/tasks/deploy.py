@@ -4,7 +4,6 @@ Deploy tasks
 
 from __future__ import with_statement
 import os
-import timeit
 from fabric.colors import red, green, yellow
 from fabric.api import *
 from py_mina.config import fetch, ensure, set, check_config
@@ -223,10 +222,9 @@ def cleanup_releases():
 		cmd = '''
 count=$(ls -A1 | sort -rn | wc -l)
 remove=$((count > %s ? count - %s : 0))
-ls -A1 | sort -rn | tail -n $remove | xargs rm -rf {}
-		''' % (releases_count, releases_count)
+ls -A1 | sort -rn | tail -n $remove | xargs rm -rf {}'''
 
-		run(cmd)
+		run(cmd % (releases_count, releases_count))
 
 
 ################################################################################
@@ -241,8 +239,6 @@ def rollback_release():
 	
 	ensure('releases_path')
 	ensure('current_path')
-
-	echo_task("Rollbacking current release")
 
 	releases_path = fetch('releases_path')
 
@@ -271,20 +267,11 @@ def rollback_release():
 ################################################################################
 
 
-def time_string(start_time):
-	stop_time = timeit.default_timer()
-	delta_time = stop_time - start_time
-
-	return '(time: %s seconds)' % delta_time
-
-
 def print_verbose():
 	pass
 
 
 def print_deploy_stats(task_name, start_time):
-	status_tuple = (task_name, time_string(start_time))
-
 	for error_state in list(filter(lambda x: type(x) == Exception, state.keys())):
 		echo_comment(('\n[ERROR]\n%s\n' % state.get(error_state)), error=True)
 
@@ -293,7 +280,7 @@ def print_deploy_stats(task_name, start_time):
 
 	if state.get('success') == True:
 		print(yellow('\n-----> Release number: %s' % fetch('release_number')))
-		echo_status('\n=====> Task "%s" finished %s\n' % status_tuple)
-	else:
-		echo_status('\n=====> Task "%s" failed %s\n' % status_tuple, error=True)
 
+	print_stats_args = [task_name, start_time]
+	if state.get('success') != True: print_stats_args.append(True)
+	print_task_stats(*print_stats_args)

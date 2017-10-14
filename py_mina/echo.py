@@ -3,12 +3,16 @@ Console output
 """
 
 
+import timeit
 from fabric.colors import *
 
 
 ################################################################################
-# Head (system defined)
+# Echo
 ################################################################################
+
+
+# System
 
 
 def echo_task(message, error=False):
@@ -23,9 +27,7 @@ def echo_subtask(message, error=False):
 	print(cyan('\n-----> %s' % message))
 
 
-################################################################################
-# Body (user defined)
-################################################################################
+# For user
 
 
 def echo_comment(message, error=False):
@@ -38,3 +40,33 @@ def echo_status(message, error=False):
 	color = red if error == True else green
 
 	print(color(message))
+
+
+################################################################################
+# Print
+################################################################################
+
+
+# Task
+
+
+def print_task_stats(task_name, start_time, error=None):
+	status_tuple = (task_name, time_string(start_time))
+
+	if error != None:
+		if (type(error) in [Exception, str]):
+			echo_comment(('\n[FATAL ERROR]\n\n%s' % error), error=True)
+			
+		echo_status(('\n=====> Task "%s" failed %s \n' % status_tuple), error=True)
+	else:
+		echo_status('\n=====> Task "%s" finished %s \n' % status_tuple)
+	
+
+# Helpers
+
+
+def time_string(start_time):
+	stop_time = timeit.default_timer()
+	delta_time = stop_time - start_time
+
+	return '(time: %s seconds)' % delta_time

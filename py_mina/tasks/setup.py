@@ -72,7 +72,7 @@ def create_shared_paths():
 			run('chmod g+rx,u+rwx ' + sfile)
 
 			recommendation_tuple = (env.host_string, os.path.join(shared_path, sfile))
-			echo_status('\n=====> Don\'t forget to update shared file \n[%s] %s\n' % recommendation_tuple , error=True)
+			echo_status('\n=====> Don\'t forget to update shared file:\n[%s] %s\n' % recommendation_tuple , error=True)
 
 
 ################################################################################
@@ -128,40 +128,3 @@ fi'''.format(host, port)
 
 	with settings(hide('everything'), warn_only=True):
 		run(cmd)
-
-
-################################################################################
-# Print
-################################################################################
-
-
-def print_verbose():
-	"""
-	TODO:
-
-	=> what to show?
-
-	"""
-
-	pass
-
-
-def print_setup_stats(task_name, **kwargs):
-	if 'start_time' in kwargs:
-		stop_time = timeit.default_timer()
-		delta_time = stop_time - kwargs.get('start_time')
-	else:
-		delta_time = 0
-
-	time_string = '(time: %s seconds)' % delta_time
-	status_tuple = (task_name, time_string)
-
-	if fetch('verbose') == True:
-		print_verbose()
-
-	if 'error' in kwargs:
-		echo_comment(('\n[FATAL ERROR]\n\n%s' % kwargs.get('error')), error=True)
-		echo_status(('\n=====> Task "%s" failed %s \n' % status_tuple), error=True)
-	else:
-		echo_status('\n=====> Task "%s" finished %s \n' % status_tuple)
-	

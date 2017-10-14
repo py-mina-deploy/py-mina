@@ -114,7 +114,7 @@ def deploy_task(on_success=None):
 
 		
 		# Copy __name__ and __doc__ from decorated function to decorator function
-		deploy.__name__ = wrapped_function_name
+		deploy.__name__ = wrapped_function_name or 'deploy'
 		if wrapped_function.__doc__: deploy.__doc__ = wrapped_function.__doc__
 
 		# Decorate with `fabric3` task decorator

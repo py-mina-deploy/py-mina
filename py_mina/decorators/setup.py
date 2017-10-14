@@ -7,7 +7,7 @@ from __future__ import with_statement
 import timeit
 from fabric.api import task, settings, show, hide
 from py_mina.tasks.setup import *
-from py_mina.echo import echo_task
+from py_mina.echo import echo_task, print_task_stats
 
 
 def setup_task(wrapped_function):
@@ -28,7 +28,7 @@ def setup_task(wrapped_function):
 		add_host_to_known_hosts()
 
 
-	def setup(*args):
+	def setup_wrapper(*args):
 		"""
 		Runs setup process on remote server
 			1) check required settings (user, host, deploy_to)
@@ -48,13 +48,13 @@ def setup_task(wrapped_function):
 			try:
 				_pre_setup()
 				wrapped_function(*args)
-				print_setup_stats(wrapped_function_name, start_time=start_time)
+				print_task_stats(wrapped_function_name, start_time)
 			except Exception as e:
-				print_setup_stats(wrapped_function_name, error=e, start_time=start_time)
+				print_task_stats(wrapped_function_name,start_time, e)
 
 	# Copy __name__ and __doc__ from decorated function to decorator function
-	setup.__name__ = wrapped_function_name
-	if wrapped_function.__doc__: setup.__doc__ = wrapped_function.__doc__
+	setup_wrapper.__name__ = wrapped_function_name or 'setup'
+	if wrapped_function.__doc__: setup_wrapper.__doc__ = wrapped_function.__doc__
 
 	# Decorate with `fabric3` task decorator
-	return task(setup)
+	return task(setup_wrapper)
