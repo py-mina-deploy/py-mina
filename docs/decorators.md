@@ -1,6 +1,6 @@
 # Decorators
 
-Defines (task)[tasks.md] and modifies execution flow by wrapping function with subtasks/hooks.
+Defines [task](tasks.md) and modifies execution flow by wrapping function with subtasks/hooks.
 
 ## @setup_task
 
