@@ -26,6 +26,8 @@ Execution flow:
 
 ## @deploy_task
 
+Accepts `on_success` callback as parameter.
+
 ```
 from py_mina import *
 from py_mina.subtasks import git_clone, link_shared_paths
