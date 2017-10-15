@@ -1,6 +1,6 @@
 # Tasks
 
-Task is a function which can be listed and executed in console (by [py_mina CLI](cli.md))
+Task is a function which can be listed and executed in console (by [py_mina CLI](cli.md)).
 
 ## Define task
 
@@ -19,7 +19,7 @@ Read [fabric documentation](http://docs.fabfile.org/en/1.13/) and see [examples]
 $ py_mina list
 ```
 
-See [CLI list command documentation](cli.md#list)
+See [CLI list command documentation](cli.md#list).
 
 ## Run task
 
@@ -27,5 +27,5 @@ See [CLI list command documentation](cli.md#list)
 $ py_mina run task_name
 ```
 
-See [CLI run command documentation](cli.md#run)
+See [CLI run command documentation](cli.md#run).
 

@@ -20,7 +20,7 @@ Following commands are available for execution
 
 #### init
 
-Creates deployfile sample
+Creates deployfile sample.
 
 ```
 $ py_mina [-f FILEPATH] init
@@ -28,7 +28,7 @@ $ py_mina [-f FILEPATH] init
 
 #### list
 
-Shows available tasks in deployfile
+Shows available tasks in deployfile.
 
 ```
 $ py_mina [-f FILEPATH] list
@@ -36,7 +36,7 @@ $ py_mina [-f FILEPATH] list
 
 #### run
 
-Runs task from deployfile
+Runs task from deployfile.
 
 ```
 $ py_mina [-f FILEPATH] run task_name
@@ -44,7 +44,7 @@ $ py_mina [-f FILEPATH] run task_name
 
 #### version
 
-Shows py_mina version
+Shows py_mina version.
 
 ```
 $ py_mina -v
@@ -52,7 +52,7 @@ $ py_mina -v
 
 #### help
 
-Shows help for py_mina cli usage
+Shows help for py_mina cli usage.
 
 ```
 $ py_mina -h

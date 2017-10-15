@@ -24,7 +24,7 @@ Execution flow:
 
 ### rollback
 
-Rollbacks latest release (`$latest`) to previous release (`$previous`)
+Rollbacks latest release (`$latest`) to previous release (`$previous`).
 
 Execution flow:
 
