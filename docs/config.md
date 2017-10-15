@@ -20,8 +20,17 @@ set('deploy_to', '/var/www/app')
 
 ## Get config value
 
+Accepts `default_value` as second parameter to make failsafe
+
 ```
 from py_mina import fetch
 
-fetch('deploy_to') # => /var/www/app
+fetch('deploy_to') 
+# output: '/var/www/app'
+
+fetch('non_existing')
+# raises exception
+
+fetch('non_existing', default_value='some value')
+# output: 'some value'
 ```
