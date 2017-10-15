@@ -10,18 +10,18 @@
 | verbose | bool | False | Enables verbose mode |
 | abort_on_prompts | bool | False | Aborts execution if prompt occured |
 
-## Get config value
-
-```
-from py_mina import fetch
-
-fetch('deploy_to')
-```
-
 ## Set config value
 
 ```
 from py_mina import set
 
 set('deploy_to', '/var/www/app')
+```
+
+## Get config value
+
+```
+from py_mina import fetch
+
+fetch('deploy_to') # => /var/www/app
 ```
