@@ -32,9 +32,9 @@ In [examples](examples) folder you will find examples of deploying:
 $ py_mina init
 ```
 
-### 2. Edit deployfile `deploy/deploy.py`
+#### 2. Edit deployfile `deploy/deploy.py`
 
-#### 2. Run `task` from deployfile
+#### 3. Run `task` from deployfile
 
 ```
 $ py_mina -f deploy/deploy.py run setup
