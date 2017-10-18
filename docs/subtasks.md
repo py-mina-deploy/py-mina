@@ -2,7 +2,7 @@
 
 Subtasks for most common deploy flows
 
-### git_clone
+## git_clone
 
 Execution flow:
 
@@ -10,24 +10,24 @@ Execution flow:
 2. Fetches new git commits
 3. Clones repository to build directory
 
-### create_shared_paths
+## create_shared_paths
 
 Execution flow:
 
 1. Creates shared paths in `$deploy_to/shared`
 
-### link_shared_paths
+## link_shared_paths
 
 Execution flow:
 
 1. Links shared paths to build folder
 
-### rollback
+## rollback
 
-Rollbacks latest release (`$latest`) to previous release (`$previous`).
+Rollbacks latest release to previous release.
 
 Execution flow:
 
-1. Discovers previous release
-2. Sets previous release as current (creates symlink from `$previous` to `$deploy_to/current`)
+1. Discovers previous release (`$previous`)
+2. Sets previous release as current (creates symlink from `$deploy_to/releases/$previous` to `$deploy_to/current`)
 3. Removes latest release (`$latest`)
