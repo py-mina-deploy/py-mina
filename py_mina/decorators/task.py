@@ -22,7 +22,7 @@ def task(wrapped_function):
 		Runs task and prints stats at the end
 		"""
 
-		echo_task('Running "%s" task' % wrapped_function_name)
+		echo_task('Running "%s" task\n' % wrapped_function_name)
 
 		start_time = timeit.default_timer()
 
