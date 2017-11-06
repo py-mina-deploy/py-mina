@@ -47,7 +47,7 @@ Execution flow:
 1. Checks config for required settings
 2. Runs [pre_deploy](#pre_deploy) hook
 3. Executes decorated function (in our case `deploy_application`) if [pre_deploy](#pre_deploy) hook succeeded 
-4. Runs `post_deploy` hook if decorated function (in our case `deploy_application`) execution succeeded
+4. Runs [post_deploy](#post_deploy) hook if decorated function (in our case `deploy_application`) execution succeeded
 5. Runs [cleanup](#cleanup) hook
 6. Runs `on_success` callback if provided and [pre_deploy](#pre_deploy), [post_deploy](#post_deploy) hooks succeeded
 7. Prints task execution stats
@@ -68,7 +68,7 @@ Execution flow:
 Execution flow:
 
 1. Moves build directory to releases path (`$deploy_to/releases/$release_number`)
-2. Creates current release symlink in `$deploy_to` path
+2. Creates latest release symlink to `$deploy_to/current`
 
 #### `cleanup`
 
@@ -76,7 +76,7 @@ Execution flow:
 
 1. Cleans up old releases (keeps latest `$keep_releases`, default is `7`)
 2. Removes a build directory
-3. Unlocks deploy (removes lockfile)
+3. Unlocks deploy (removes lockfile `$deploy_to/deploy.lock`)
 
 
 

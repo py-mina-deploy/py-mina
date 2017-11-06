@@ -10,7 +10,7 @@
 | verbose | bool | False | Enables verbose mode |
 | abort_on_prompts | bool | False | Aborts execution if prompt occured |
 
-## Set config value
+## Set config value - `set`
 
 ```
 from py_mina import set
@@ -18,12 +18,29 @@ from py_mina import set
 set('deploy_to', '/var/www/app')
 ```
 
-## Get config value
+Additional config settings are created when provided `deploy_to` value:
 
-Accepts `default_value` as second parameter for failsafty.
+* `build_to` - build folder path (`$deploy_to/tmp/$timestamp`)
+* `shared_path` - shared folder path (`$deploy_to/shared`)
+* `releases_path` - releases folder path (`$deploy_to/releases`)
+* `current_path` - current release symlink path (`$deploy_to/current`)
+* `scm` - bare git repository path (`$deploy_to/scm`)
+
+When running [task](tasks.md) decorated with [deploy_task](decorators.md#deploy_task) decorator py_mina
+discovers and sets:
+
+* `release_number` - future release number, if deploy will succeed (computed as highest release number in `$deploy_to/releases` + 1)
+* `release_to` - future release path (`$deploy_to/releases/$release_number`)
+
+
+## Get config value - `fetch`
+
+Accepts `default_value` as second parameter for failsafe call.
 
 ```
-from py_mina import fetch
+from py_mina import set, fetch
+
+set('deploy_to', '/var/www/app')
 
 fetch('deploy_to') 
 # output: '/var/www/app'
