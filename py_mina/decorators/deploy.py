@@ -25,7 +25,7 @@ def deploy_task(on_success=None):
 
 
 		def _pre_deploy():
-			try: 
+			try:
 				check_lock()
 				lock()
 				create_build_path()
@@ -62,7 +62,7 @@ def deploy_task(on_success=None):
 
 		def _finalize_deploy():
 			if not state.get('success') == True:
-				echo_task('Failed deploy cleaning up')
+				echo_task('Cleaning up failed deploy')
 
 			try:
 				cleanup_releases()

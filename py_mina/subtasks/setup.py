@@ -18,11 +18,11 @@ from py_mina.echo import *
 
 
 def check_setup_config():
-	"""
-	Checks required config settings for setup task
-	"""
+    """
+    Checks required config settings for setup task
+    """
 
-	check_config(['user', 'hosts', 'deploy_to'])
+    check_config(['user', 'hosts', 'deploy_to'])
 
 
 ################################################################################
@@ -31,48 +31,50 @@ def check_setup_config():
 
 
 def create_required_structure():
-	"""
-	Creates required folders (tmp, releases, shared) in `deploy_to` path
-	"""
+    """
+    Creates required folders (tmp, releases, shared) in `deploy_to` path
+    """
 
-	ensure('deploy_to')
+    ensure('deploy_to')
 
-	echo_subtask('Creating required structure')
+    echo_subtask('Creating required structure')
 
-	run('mkdir -p %s' % fetch('deploy_to'))
+    run('mkdir -p %s' % fetch('deploy_to'))
 
-	for required_path in ['shared', 'releases', 'tmp']:
-		run('mkdir -p %s' % os.path.join(fetch('deploy_to'), required_path))
+    for required_path in ['shared', 'releases', 'tmp']:
+        run('mkdir -p %s' % os.path.join(fetch('deploy_to'), required_path))
 
 
 def create_shared_paths():
-	"""
-	Creates shared dirs and touches shared files
-	"""
-	
-	ensure('shared_path')
-	ensure('shared_dirs')
-	ensure('shared_files')
+    """
+    Creates shared dirs and touches shared files
+    """
 
-	echo_subtask('Creating shared paths')
+    ensure('shared_path')
+    ensure('shared_dirs')
+    ensure('shared_files')
 
-	shared_path = fetch('shared_path')
+    echo_subtask('Creating shared paths')
 
-	with cd(shared_path):
-		for sdir in fetch('shared_dirs'):
-			run('mkdir -p %s' % sdir)
+    shared_path = fetch('shared_path')
 
-		for sfile in fetch('shared_files'):
-			directory, filename_ = os.path.split(sfile)
+    # with cd(shared_path):
+    for sdir in fetch('shared_dirs'):
+        run('mkdir -p %s' % os.path.join(shared_path, sdir))
 
-			if directory: 
-				run('mkdir -p %s' % directory)
+    for sfile in fetch('shared_files'):
+        directory, filename_ = os.path.split(sfile)
 
-			run('touch ' + sfile)
-			run('chmod g+rx,u+rwx ' + sfile)
+        if directory: 
+            run('mkdir -p %s' % os.path.join(shared_path, directory))
 
-			recommendation_tuple = (env.host_string, os.path.join(shared_path, sfile))
-			echo_status('\n=====> Don\'t forget to update shared file:\n[%s] %s\n' % recommendation_tuple , error=True)
+        filepath = os.path.join(shared_path, sfile)
+        
+        run('touch ' + filepath)
+        run('chmod g+rx,u+rwx ' + filepath)
+
+        recommendation_tuple = (env.host_string, filepath)
+        echo_status('\n=====> Don\'t forget to update shared file:\n[%s] %s\n' % recommendation_tuple, error=True)
 
 
 ################################################################################
@@ -81,50 +83,51 @@ def create_shared_paths():
 
 
 def add_repo_to_known_hosts():
-	"""
-	Adds repository host to known hosts if possible
-	"""
+    """
+    Adds repository host to known hosts if possible
+    """
 
-	maybe_repository = fetch('repository', default_value='')
+    maybe_repository = fetch('repository', default_value='')
 
-	if maybe_repository and len(maybe_repository) > 0:
-		# Parse repo host
-		repo_host_array = re.compile('(@|://)').split(maybe_repository)
-		repo_host_part = repo_host_array[-1] if len(repo_host_array) > 0 else ''
-		repo_host_match = re.compile(':|\/').split(repo_host_part)
-		repo_host = repo_host_match[0] if len(repo_host_match) > 0 else ''
+    if maybe_repository:
+        # Parse repo host
+        repo_host_array = re.compile('(@|://)').split(maybe_repository)
+        repo_host_part = repo_host_array[-1] if repo_host_array else ''
+        repo_host_match = re.compile(':|\/').split(repo_host_part)
+        repo_host = repo_host_match[0] if repo_host_match else ''
 
-		# Exit if no host
-		if repo_host == '': return
+        # Exit if no host
+        if repo_host == '': 
+            return
 
-		# Parse port
-		repo_port_match = re.search(r':([0-9]+)', maybe_repository)
-		repo_port = repo_port_match.group(1) if bool(repo_port_match) == True else 22
+        # Parse port
+        repo_port_match = re.search(r':([0-9]+)', maybe_repository)
+        repo_port = repo_port_match.group(1) if bool(repo_port_match) else 22
 
-		echo_subtask('Adding repository to known hosts')
+        echo_subtask('Adding repository to known hosts')
 
-		add_to_known_hosts(repo_host, repo_port)
+        add_to_known_hosts(repo_host, repo_port)
 
 
 def add_host_to_known_hosts():
-	"""
-	Adds current host to the known hosts
+    """
+    Adds current host to the known hosts
 
-	`fabric3` library sets to `env.host_string` current host where task is executed
-	"""
+    `fabric3` library sets to `env.host_string` current host where task is executed
+    """
 
-	ensure('hosts')
+    ensure('hosts')
 
-	echo_subtask('Adding current host to known hosts')
+    echo_subtask('Adding current host to known hosts')
 
-	add_to_known_hosts(env.host_string, env.port)
+    add_to_known_hosts(env.host_string, env.port)
 
 
 def add_to_known_hosts(host, port):
-	cmd = '''
+    cmd = '''
 if ! ssh-keygen -H -F {0} &>/dev/null; then
-	ssh-keyscan -t rsa -p {1} -H {0} >> ~/.ssh/known_hosts
+    ssh-keyscan -t rsa -p {1} -H {0} >> ~/.ssh/known_hosts
 fi'''.format(host, port)
 
-	with settings(hide('everything'), warn_only=True):
-		run(cmd)
+    with settings(hide('everything'), warn_only=True):
+        run(cmd)

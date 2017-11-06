@@ -12,12 +12,12 @@ from py_mina.utils import _AttributeDict
 
 
 state = _AttributeDict({
-	'pre_deploy': None,	
-	'deploy': None,	
-	'post_deploy': None,	
-	'finalize': None,
-	'success': None,
-	'on_success': None,
+    'pre_deploy': None, 
+    'deploy': None, 
+    'post_deploy': None,    
+    'finalize': None,
+    'success': None,
+    'on_success': None,
 })
 
 
@@ -27,10 +27,10 @@ state = _AttributeDict({
 
 
 def set(key, value):
-	if key in state.keys():
-		state[key] = value
-	else:
-		raise Exception('State "%s" is not defined' % key)
+    if key in state.keys():
+        state[key] = value
+    else:
+        raise Exception('State "%s" is not defined' % key)
 
 
 # Alias to prevent conflict when importing "py_mina.config" and "py_mina.state"

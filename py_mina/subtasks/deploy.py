@@ -36,8 +36,8 @@ def check_lock():
     
     echo_subtask("Checking `deploy.lock` file presence")
 
-    with cd(fetch('deploy_to')), settings(hide('everything'), warn_only=True):
-        if run('test -f deploy.lock').succeeded:
+    with settings(hide('warnings'), warn_only=True):
+        if run('test -f %s' % os.path.join(fetch('deploy_to'), 'deploy.lock')).succeeded:
             abort("Another deploy in progress")
 
 
@@ -51,8 +51,7 @@ def lock():
 
     echo_subtask("Creating `deploy.lock` file")
 
-    with cd(fetch('deploy_to')):
-        run('touch deploy.lock')
+    run('touch %s' % os.path.join(fetch('deploy_to'), 'deploy.lock'))
 
 
 def create_build_path():
@@ -125,27 +124,27 @@ def link_shared_paths():
 
     echo_subtask("Linking shared paths")
 
-    with cd(fetch('build_to')):
-        shared = fetch('shared_path')
+    shared = fetch('shared_path')
+    build_to = fetch('build_to')
 
-        # Shared dirs
-        for sdir in fetch('shared_dirs'):
-            relative_path = os.path.join('./', sdir)
-            directory, filename_ = os.path.split(relative_path)
-            shared_path = os.path.join(shared, sdir)
-        
-            run('mkdir -p %s' % directory)
-            run('rm -rf %s' % relative_path)
-            run('ln -s "{0}" "{1}"'.format(shared_path, relative_path))
+    # Shared dirs
+    for sdir in fetch('shared_dirs'):
+        relative_path = os.path.join('./', sdir)
+        directory, filename_ = os.path.split(relative_path)
+        shared_path = os.path.join(shared, sdir)
+    
+        run('cd %s && mkdir -p %s' % (build_to, directory)) # create parent directory
+        run('cd %s && rm -rf %s' % (build_to, relative_path)) # remove directory if it conficts with shared
+        run('cd {0} && ln -s "{1}" "{2}"'.format(build_to, shared_path, relative_path)) # link shared to current folder
 
-        # Shared files
-        for sfile in fetch('shared_files'):
-            shared_path = os.path.join(shared, sfile)
-            relative_path = os.path.join('./', sfile)
-            directory, filename_ = os.path.split(relative_path)
+    # Shared files
+    for sfile in fetch('shared_files'):
+        shared_path = os.path.join(shared, sfile)
+        relative_path = os.path.join('./', sfile)
+        directory, filename_ = os.path.split(relative_path)
 
-            run('mkdir -p %s' % directory)
-            run('ln -sf "{0}" "{1}"'.format(shared_path, relative_path))
+        run('cd %s && mkdir -p %s' % (build_to, directory)) # create parent directory
+        run('cd {0} && ln -sf "{1}" "{2}"'.format(build_to, shared_path, relative_path)) # link shared to current folder
 
 
 ################################################################################
@@ -198,7 +197,7 @@ def cleanup_releases():
 
     echo_subtask("Cleaning up old realeses. Keeping latest %s" % releases_count)
 
-    with cd(fetch('releases_path')):
+    with cd(fetch('releases_path')), show('debug'):
         cmd = '''
 count=$(ls -A1 | sort -rn | wc -l)
 remove=$((count > %s ? count - %s : 0))
@@ -227,8 +226,7 @@ def force_unlock():
 
     echo_subtask("Removing `deploy.lock` file")
 
-    with cd(fetch('deploy_to')):
-        run('rm -f deploy.lock')
+    run('rm -f %s' % os.path.join(fetch('deploy_to'), 'deploy.lock'))
 
 
 ################################################################################
@@ -238,7 +236,7 @@ def force_unlock():
 
 def rollback_release():
     """
-    Rollbacks current release to previous release
+    Rollbacks latest release
     """
     
     ensure('releases_path')
@@ -246,24 +244,25 @@ def rollback_release():
 
     releases_path = fetch('releases_path')
 
-    with cd(releases_path):
-        echo_subtask('Finding previous release for rollback')
-        rollback_release = run('ls -1A | sort -n | tail -n 2 | head -n 1')
+    with(settings(show('debug'))):
+        with cd(releases_path):
+            echo_subtask('Finding previous release for rollback')
+            rollback_release_number = run('ls -1A | sort -n | tail -n 2 | head -n 1')
 
-        if int(rollback_release) > 0:
-            echo_subtask('Linking previous release to current')
-            run('ln -nfs %s/%s %s' % (releases_path, rollback_release, fetch('current_path')))
+            if int(rollback_release_number) > 0:
+                echo_subtask('Linking previous release to current')
+                run('ln -nfs %s/%s %s' % (releases_path, rollback_release_number, fetch('current_path')))
 
-            echo_subtask('Finding current release')
-            current_release = run('ls -1A | sort -n | tail -n 1')
+                echo_subtask('Finding latest release')
+                current_release = run('ls -1A | sort -n | tail -n 1')
 
-            if int(current_release) > 0:
-                echo_subtask('Removing current release')
-                run('rm -rf %s/%s' % (releases_path, current_release))
+                if int(current_release) > 0:
+                    echo_subtask('Removing latest release')
+                    run('rm -rf %s/%s' % (releases_path, current_release))
+                else:
+                    abort('Can\'t find latest release for remove.')
             else:
-                abort('Can\'t find current release for remove.')
-        else:
-            abort('Can\'t find previous release for rollback.')
+                abort('Can\'t find previous release for rollback.')
 
 
 ################################################################################
