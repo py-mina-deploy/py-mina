@@ -60,17 +60,17 @@ def deploy_task(on_success=None):
 					raise error # escalate exception to 'deploy_wrapper' function
 
 
-		def _finallize_deploy():
+		def _finalize_deploy():
 			if not state.get('success') == True:
 				echo_task('Failed deploy cleaning up')
 
 			try:
 				cleanup_releases()
 				remove_build_path()
-				unlock()
-				set_state('finallize', True)
+				force_unlock()
+				set_state('finalize', True)
 			except Exception as error:
-				set_state('finallize', error)
+				set_state('finalize', error)
 
 
 		def _on_success_deploy():
@@ -88,7 +88,7 @@ def deploy_task(on_success=None):
 				1) Pre deploy (lock, build path, latest_release)
 				2) Deploy
 				3) Post deploy (move to releases, link release to current)
-				4) Finallize deploy (cleanup, remove build path, unlock)
+				4) Finalize deploy (cleanup, remove build path, unlock)
 				5) Runs `on_success` callback function if deploy successfully finished
 				6) Shows deploy stats
 			"""
@@ -109,7 +109,7 @@ def deploy_task(on_success=None):
 					echo_comment(('\n[ERROR]\n%s\n' % error), error=True)
 					set_state('success', error)
 
-				_finallize_deploy()
+				_finalize_deploy()
 				_on_success_deploy()
 				print_deploy_stats(wrapped_function_name, start_time=start_time)
 

@@ -15,7 +15,7 @@ state = _AttributeDict({
 	'pre_deploy': None,	
 	'deploy': None,	
 	'post_deploy': None,	
-	'finallize': None,
+	'finalize': None,
 	'success': None,
 	'on_success': None,
 })
