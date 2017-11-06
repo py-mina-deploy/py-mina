@@ -31,3 +31,13 @@ Execution flow:
 1. Discovers previous release (`$previous`)
 2. Sets previous release as current (creates symlink from `$deploy_to/releases/$previous` to `$deploy_to/current`)
 3. Removes latest release (`$latest`)
+
+## force_unlock
+
+> Use it when you are absolutely sure that another deploy is not happening!
+
+Forces lockfile removal. Useful after failed deploy.
+
+Execution flow:
+
+1. Removes lockfile  (`$deploy_to/deploy.lock`)
