@@ -2,13 +2,13 @@
 from setuptools import setup, find_packages
 
 try:
-    long_description = open("README.md").read()
+    long_description = open("README.rst").read()
 except IOError:
     long_description = "Deployer and server automation tool."
 
 setup(
     name="py_mina",
-    version="0.1.5",
+    version="0.1.6",
     description="Python library for deploying applications on remote server",
     long_description=long_description,
     license="MIT",

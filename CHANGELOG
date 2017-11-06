@@ -1,3 +1,9 @@
+# 0.1.6
+
+* fix typos
+* showing full folders paths (instead of `.` show `/path/to`)
+* expose `force_unlock` subtask
+
 # 0.1.5
 
 * tasks execution refactoring
