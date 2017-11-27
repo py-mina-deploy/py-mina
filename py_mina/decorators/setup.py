@@ -22,10 +22,10 @@ def setup_task(wrapped_function):
 		"""
 		Creates required structure and adds hosts to known hosts
 		"""
-
-		create_required_structure()				
-		add_repo_to_known_hosts()
-		add_host_to_known_hosts()
+		with settings(hide('output')):
+			create_required_structure()				
+			add_repo_to_known_hosts()
+			add_host_to_known_hosts()
 
 
 	def setup_wrapper(*args):
@@ -43,13 +43,13 @@ def setup_task(wrapped_function):
 
 		echo_task('Running "%s" task' % wrapped_function_name)
 
-		with settings(show('debug'), hide('output'), colorize_errors=True):
+		with settings(show('debug'), colorize_errors=True):
 			try:
 				_pre_setup()
 				wrapped_function(*args)
 				print_task_stats(wrapped_function_name, start_time)
 			except Exception as e:
-				print_task_stats(wrapped_function_name,start_time, e)
+				print_task_stats(wrapped_function_name, start_time, e)
 
 	# Copy __name__ and __doc__ from decorated function to decorator function
 	setup_wrapper.__name__ = wrapped_function_name or 'setup'

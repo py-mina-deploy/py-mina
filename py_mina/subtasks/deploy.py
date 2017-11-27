@@ -211,12 +211,14 @@ def remove_build_path():
     Removes a temporary build dir
     """
 
-    ensure('build_to')
+    ensure('deploy_to')
     
     echo_subtask("Removing build path")
 
     with settings(hide('stdout', 'warnings'), warn_only=True):
-        run('rm -rf %s' % fetch('build_to'))
+        builds_path = os.path.join(fetch('deploy_to'), 'tmp', 'build-*')
+
+        run('rm -rf %s' % builds_path)
 
 
 def force_unlock():
