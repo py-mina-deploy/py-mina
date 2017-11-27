@@ -1,3 +1,8 @@
+# 0.1.7
+
+* delete all builds from $deploy_to/tmp after deploy
+* fix error showing
+
 # 0.1.6
 
 * fix typos
