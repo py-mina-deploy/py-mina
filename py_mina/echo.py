@@ -53,10 +53,8 @@ def echo_status(message, error=False):
 def print_task_stats(task_name, start_time, error=None):
     status_tuple = (task_name, time_string(start_time))
 
-    if error != None:
-        if (type(error) in [Exception, str]):
-            echo_comment(('\n[FATAL ERROR]\n\n%s' % error), error=True)
-            
+    if error:
+        echo_comment(('\n[FATAL ERROR]\n\n%s' % error), error=True)
         echo_status(('\n=====> Task "%s" failed %s \n' % status_tuple), error=True)
     else:
         echo_status('\n=====> Task "%s" finished %s \n' % status_tuple)
