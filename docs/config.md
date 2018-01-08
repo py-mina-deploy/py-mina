@@ -7,8 +7,14 @@
 | deploy_to | str | | Target deploy directory on remote server |
 | repository | str | | Git repository endpoint |
 | branch | str | | Git branch for deployment |
+| shared_files | array | [] | Application shared files |
+| shared_dirs | array | [] | Application shared directories |
+| owner_user | string | &`user` | Global access owner. CANT access files of protected owner |
+| owner_group | string | &`user` | Global access owner. CANT access files of protected owner |
+| protected_owner_user | string | &`user` | Protected shared files owner. CAN access files of owner |
+| protected_owner_group | string | &`user` | Protected shared files owner. CAN access files of owner |
 | verbose | bool | False | Enables verbose mode |
-| abort_on_prompts | bool | False | Aborts execution if prompt occured |
+| abort_on_prompts | bool | True | Aborts execution if prompt occured |
 
 ## Set config value - `set`
 

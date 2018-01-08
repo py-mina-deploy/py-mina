@@ -39,10 +39,13 @@ def create_required_structure():
 
     echo_subtask('Creating required structure')
 
-    run('mkdir -p %s' % fetch('deploy_to'))
+    deploy_to = fetch('deploy_to')
+
+    create_entity(deploy_to, entity_type='directory')
 
     for required_path in ['shared', 'releases', 'tmp']:
-        run('mkdir -p %s' % os.path.join(fetch('deploy_to'), required_path))
+        create_entity(os.path.join(deploy_to, required_path), entity_type='directory')
+
 
 
 def create_shared_paths():
@@ -60,7 +63,7 @@ def create_shared_paths():
 
     # with cd(shared_path):
     for sdir in fetch('shared_dirs'):
-        run('mkdir -p %s' % os.path.join(shared_path, sdir))
+        create_entity(os.path.join(shared_path, sdir), entity_type='directory', protected=True)
 
     for sfile in fetch('shared_files'):
         directory, filename_ = os.path.split(sfile)
@@ -70,11 +73,45 @@ def create_shared_paths():
 
         filepath = os.path.join(shared_path, sfile)
         
-        run('touch ' + filepath)
-        run('chmod g+rx,u+rwx ' + filepath)
+        create_entity(filepath, protected=True)
 
         recommendation_tuple = (env.host_string, filepath)
         echo_status('\n=====> Don\'t forget to update shared file:\n[%s] %s\n' % recommendation_tuple, error=True)
+
+
+def fetch_owner():
+    """
+    Fetches owner of shared paths
+    """
+
+    ensure('user')
+
+    user = fetch('user')
+    owner_user = fetch('owner_user', default_value=user)
+    owner_group = fetch('owner_group', default_value=user)
+    protected_owner_user = fetch('protected_owner_user', default_value=user)
+    protected_owner_group = fetch('protected_owner_group', default_value=user)
+
+    return owner_user, owner_group, protected_owner_user, protected_owner_group
+
+
+def create_entity(entity_path, entity_type = 'file', protected=False):
+    """
+    Creates directory/file and sets proper `chmod` and `chown` values
+    """
+
+    owner_user, owner_group, protected_owner_user, protected_owner_group = fetch_owner()
+    protected_owner_tuple = (protected_owner_user, protected_owner_group, entity_path)
+    owner_tuple = (owner_user, owner_group, entity_path)
+    change_owner_tuple = protected_owner_tuple if protected else owner_tuple
+
+    if entity_type == 'file':
+        run('touch %s' % entity_path)
+    else:
+        run('mkdir -p %s' % entity_path)
+
+    run('chmod u+rwx,g+rx,o-rwx ' + entity_path)
+    run('chown -R %s:%s %s' % change_owner_tuple)
 
 
 ################################################################################

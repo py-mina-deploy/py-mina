@@ -1,3 +1,10 @@
+# 0.1.8
+* py_mina.cli init command staged attribute (`--staged`) splits deployfile into `runner & config` logic
+  * `py_mina --staged init`
+* added config settings: `owner_user`, `owner_group`, 'protected_owner_user', 'protected_owner_group'
+  * `owner` - sets global owner of `deploy_to` directory
+  * `protected_owner` - sets owner of protected shared files (security)
+
 # 0.1.7
 
 * delete all builds from $deploy_to/tmp after deploy

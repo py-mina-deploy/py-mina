@@ -75,6 +75,7 @@ def cli_command_init(args):
 	"""
 
 	filepath = args.get('filename')
+	staged = args.get('staged')
 
 	if filepath:
 		fullpath = os.path.join(os.path.realpath(os.curdir), filepath)

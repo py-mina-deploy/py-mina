@@ -8,11 +8,12 @@ Commands:
 * [Show version](#version)
 * [Show help](#help)
 
-## Parameters
+## Global parameters
 
 | Name | Default value | Description |
 |-|-|-|
-| -f | deploy/deploy.py | Deployfile location |
+| -f | `./deploy/deploy.py` | Deployfile path |
+| -h | | Show help for command which is placed before. Position is important. For example `py_mina run -h` will show help for [`run`](#run) command |
 
 ## Commands
 
@@ -20,10 +21,14 @@ Following commands are available for execution
 
 #### init
 
-Creates deployfile sample.
+| Name | Default value | Description |
+|-|-|-|
+| -s, --staged | `./deploy/` | Path for staged deploy initialization (creates multiple files). Ignores `-f` parameter |
+
+Deploy config file/files initialization.
 
 ```
-$ py_mina [-f FILEPATH] init
+$ py_mina [-f FILEPATH] init [-s DIRPATH]
 ```
 
 #### list
