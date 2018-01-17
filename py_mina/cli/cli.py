@@ -39,8 +39,8 @@ def run():
 	parser.add_argument(
 		'-f', '--filename',
 		metavar='FILEPATH',
-		help='deployfile location',
-		dest='filename', default='deploy/deploy.py')
+		help='deployfile relative location (default: "./deploy/deploy.py")',
+		dest='filename', default='./deploy/deploy.py')
 
 
 	#
@@ -49,8 +49,8 @@ def run():
 
 
 	commands = parser.add_subparsers(
-		help='available commands',
-		dest='command', metavar='<command>')
+		help='',
+		dest='command', metavar='<commands>')
 
 
 	# Init
@@ -58,14 +58,14 @@ def run():
 
 	init_parser = commands.add_parser(
 		'init', 
-		help='creates deployfile sample')
+		help='creates basic deployfile in relative FILEPATH (default: "./deploy/deploy.py")')
 
 
 	init_parser.add_argument(
 		'-s', '--staged', 
-		metavar='DIRPATH',
-		help='creates config and runner scripts for staged deploy',
-		dest='staged', default='deploy/')
+		metavar='DIRPATH', nargs='?',
+		help='creates "staged deployment" deployfiles in relative DIRPATH (default: "./deploy/")',
+		default=False)
 
 
 	# Run
