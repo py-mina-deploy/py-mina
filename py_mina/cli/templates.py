@@ -11,9 +11,10 @@ from py_mina.cli.template_generator import *
 ################################################################################
 
 
-base_template = template_places_5.format(
+base_template = template_places_6.format(
     generate_head(),
     generate_settings('global'),
+    generate_settings('connection'),
     generate_settings('application'),
     generate_settings('shared'),
     generate_tasks()

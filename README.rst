@@ -1,7 +1,7 @@
 py_mina
 =======
 
-    **Deployer and server automation tool**
+**Deployer and server automation tool**
 
 Python library for **deploying** applications on **remote server**.
 

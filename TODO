@@ -3,8 +3,3 @@
 * add `cli` inputs validation
 * init - prompt | move deployfiles if already exists 
 * prompt_unlock_if_locked
-
-DOCS
-- Tasks
-- Decorators
-- Fabric commands overview
