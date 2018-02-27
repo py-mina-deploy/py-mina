@@ -1,5 +1,4 @@
 # Todo
 
 * add `cli` inputs validation
-* init - prompt | move deployfiles if already exists 
-* prompt_unlock_if_locked
+* pass config settings using command line (something like: `py_mina run deploy -- -user root -host localhost`)

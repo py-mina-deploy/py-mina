@@ -1,9 +1,15 @@
+# 0.1.11
+
+* (conifg) `ask_unlock_if_locked` - prompts to continue if lockfile exists
+* (conifg) protected shared files/dirs (protected_shared_files, protected_shared_dirs)
+* (conifg) protected files/dirs owner (protected_owner_user, protected_owner_group)
+* (conifg) explicit definition of pubilc files ownership (owner_user, owner_group)
+* updated `pi_mina init` generator
+
 # 0.1.8
+
 * py_mina.cli init command staged attribute (`--staged`) splits deployfile into `runner & config` logic
   * `py_mina --staged init`
-* added config settings: `owner_user`, `owner_group`, 'protected_owner_user', 'protected_owner_group'
-  * `owner` - sets global owner of `deploy_to` directory
-  * `protected_owner` - sets owner of protected shared files (security)
 
 # 0.1.7
 

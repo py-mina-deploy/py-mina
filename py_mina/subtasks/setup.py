@@ -41,77 +41,104 @@ def create_required_structure():
 
     deploy_to = fetch('deploy_to')
 
-    create_entity(deploy_to, entity_type='directory')
+    create_entity(deploy_to, entity_type='directory', protected=False)
 
     for required_path in ['shared', 'releases', 'tmp']:
-        create_entity(os.path.join(deploy_to, required_path), entity_type='directory')
+        create_entity(
+            os.path.join(deploy_to, required_path), 
+            entity_type='directory', 
+            protected=False
+        )
 
 
 
 def create_shared_paths():
     """
-    Creates shared dirs and touches shared files
+    Creates shared (+protected) files/dirs and sets unix owner/mode
     """
 
-    ensure('shared_path')
-    ensure('shared_dirs')
-    ensure('shared_files')
+    global shared_path
+    shared_path = fetch('shared_path')
+
+    def create_dirs(directories, protected=False):
+        global shared_path
+
+        for sdir in directories:
+            create_entity(
+                os.path.join(shared_path, sdir), 
+                entity_type='directory', 
+                protected=protected
+            )
+
+
+    def create_files(files, protected=False):
+        global shared_path
+
+        for sfile in files:
+            directory, filename_ = os.path.split(sfile)
+
+            if directory: 
+                create_entity(
+                    os.path.join(shared_path, directory), 
+                    entity_type='directory', 
+                    protected=protected
+                )
+
+            filepath = os.path.join(shared_path, sfile)
+            
+            create_entity(filepath, entity_type='file', protected=protected)
+
+            recommendation_tuple = (env.host_string, filepath)
+            echo_status('\n=====> Don\'t forget to update shared file:\n[%s] %s\n' % recommendation_tuple, error=True)
+
 
     echo_subtask('Creating shared paths')
 
-    shared_path = fetch('shared_path')
+    # Shared
+    create_dirs(fetch('shared_dirs', default_value=[]), protected=False)
+    create_files(fetch('shared_files', default_value=[]), protected=False)
 
-    # with cd(shared_path):
-    for sdir in fetch('shared_dirs'):
-        create_entity(os.path.join(shared_path, sdir), entity_type='directory', protected=True)
-
-    for sfile in fetch('shared_files'):
-        directory, filename_ = os.path.split(sfile)
-
-        if directory: 
-            run('mkdir -p %s' % os.path.join(shared_path, directory))
-
-        filepath = os.path.join(shared_path, sfile)
-        
-        create_entity(filepath, protected=True)
-
-        recommendation_tuple = (env.host_string, filepath)
-        echo_status('\n=====> Don\'t forget to update shared file:\n[%s] %s\n' % recommendation_tuple, error=True)
-
-
-def fetch_owner():
-    """
-    Fetches owner of shared paths
-    """
-
-    ensure('user')
-
-    user = fetch('user')
-    owner_user = fetch('owner_user', default_value=user)
-    owner_group = fetch('owner_group', default_value=user)
-    protected_owner_user = fetch('protected_owner_user', default_value=user)
-    protected_owner_group = fetch('protected_owner_group', default_value=user)
-
-    return owner_user, owner_group, protected_owner_user, protected_owner_group
+    # Protected
+    create_dirs(fetch('protected_shared_dirs', default_value=[]), protected=True)
+    create_files(fetch('protected_shared_files', default_value=[]), protected=True)
 
 
 def create_entity(entity_path, entity_type = 'file', protected=False):
     """
-    Creates directory/file and sets proper `chmod` and `chown` values
+    Creates directory/file and sets proper owner/mode.
     """
 
-    owner_user, owner_group, protected_owner_user, protected_owner_group = fetch_owner()
-    protected_owner_tuple = (protected_owner_user, protected_owner_group, entity_path)
-    owner_tuple = (owner_user, owner_group, entity_path)
-    change_owner_tuple = protected_owner_tuple if protected else owner_tuple
+    def change_owner(owner_triple):
+        """
+        Changes unix owner/mode
+        """
+
+        run('chmod u+rwx,g+rx,o-rwx ' + entity_path)
+        run('chown -R %s:%s %s' % owner_triple)
+
+
+    # 1) Create file/directory
 
     if entity_type == 'file':
         run('touch %s' % entity_path)
     else:
         run('mkdir -p %s' % entity_path)
 
-    run('chmod u+rwx,g+rx,o-rwx ' + entity_path)
-    run('chown -R %s:%s %s' % change_owner_tuple)
+    # 2) Change owner/mode
+
+    if protected:
+        protected_owner_user = fetch('protected_owner_user')
+        protected_owner_group = fetch('protected_owner_group')
+
+        change_owner((protected_owner_user, protected_owner_group, entity_path))
+    else:
+        owner_user = fetch('owner_user', default_value=False)
+        owner_group = fetch('owner_group', default_value=False)
+        
+        if owner_user != False and owner_group != False: 
+            change_owner((owner_user, owner_group, entity_path))
+        else:
+            run('chmod o-rwx ' + entity_path)
 
 
 ################################################################################

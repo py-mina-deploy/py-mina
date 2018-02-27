@@ -28,7 +28,7 @@ def generate_settings_global(staged=False):
 
 set('verbose', True)
 set('keep_releases', 5)
-set('prompt_unlock_if_locked', True)'''.format(staged_import)
+#set('ask_unlock_if_locked', True)'''.format(staged_import)
 
 
 def generate_settings_application(staged=False):
@@ -52,11 +52,32 @@ set('branch', '{1}')'''.format(application_string, branch)
 
 
 def generate_settings_shared(staged=False):
-    return '''# Settings - shared
+    return '''# Settings - shared [PUBLIC] files/dirs (application configs, assets, storage, etc.)
 
 
 set('shared_dirs', [])
-set('shared_files', [])'''
+set('shared_files', [])
+
+
+# Settings - explicit owner of [PUBLIC] shared files/dirs
+
+
+#set('owner_user', 'www-data')
+#set('owner_group', 'www-data')
+
+
+# Settings - protected shared files/dirs (db configs, certificates, keys, etc.)
+#          * [PROTECTED] owner config settings are required to be set
+
+
+#set('protected_shared_dirs', [])
+#set('protected_shared_files', [])
+
+
+# Settings - owner of [PROTECTED] shared files/dirs
+
+#set('protected_owner_user', 'root')
+#set('protected_owner_group', 'root')'''
 
 
 def generate_settings_connection(staged=False):
@@ -66,7 +87,7 @@ def generate_settings_connection(staged=False):
 
 
 set('user', 'root')
-set('hosts', ['example.com']){0}'''.format(staged_name)
+set('hosts', ['localhost']){0}'''.format(staged_name)
 
 
 ################################################################################

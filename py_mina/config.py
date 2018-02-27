@@ -17,10 +17,13 @@ import py_mina.state
 
 config = _AttributeDict({
     'keep_releases': 7,
+    'ask_unlock_if_locked': False,
+    'verbose': False,
+    'abort_on_prompts': False,
     'shared_files': [],
     'shared_dirs': [],
-    'abort_on_prompts': False,
-    'verbose': False,
+    'protected_shared_files': [],
+    'protected_shared_dirs': [],
     'farbric_config_settings': ['user', 'hosts', 'abort_on_prompts']
 })
 

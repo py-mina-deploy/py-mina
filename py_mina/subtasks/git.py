@@ -8,7 +8,8 @@ import os
 from fabric.api import settings, hide, run, cd
 from py_mina.echo import echo_subtask, echo_task
 from py_mina.config import fetch, ensure
-# from fabric.utils import fastprint
+from py_mina.subtasks.setup import create_entity
+
 
 def git_clone():
     """
@@ -31,12 +32,16 @@ def maybe_clone_git_repository():
     echo_subtask('Ensuring git repository presence')
 
     with settings(hide('warnings'), warn_only=True):
+        scm_path = fetch('scm')
 
-        if run('test -d %s' % fetch('scm')).failed:
+        if run('test -d %s' % scm_path).failed:
+            create_entity(scm_path, entity_type='directory', protected=False)
+
+        if run('test -f %s' % os.path.join(scm_path, 'HEAD')).failed:
             echo_subtask("Cloning bare git repository")
 
             with settings(hide('output')):
-                run('git clone {0} {1} --bare'.format(fetch('repository'), fetch('scm')))
+                run('git clone {0} {1} --bare'.format(fetch('repository'), scm_path))
 
 
 def fetch_new_commits():
@@ -52,6 +57,7 @@ def fetch_new_commits():
 
     with cd(fetch('scm')):
         run('git fetch {0} "{1}:{1}" --force'.format(fetch('repository'), fetch('branch')))
+
 
 def use_git_branch():
     """

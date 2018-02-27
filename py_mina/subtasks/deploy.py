@@ -6,10 +6,11 @@ from __future__ import with_statement
 import os
 from fabric.colors import red, green, yellow
 from fabric.api import *
+from fabric.contrib.console import confirm
 from py_mina.config import fetch, ensure, set, check_config
 from py_mina.state import state
 from py_mina.echo import *
-
+from py_mina.subtasks.setup import create_entity
 
 ################################################################################
 # Config
@@ -25,7 +26,7 @@ def check_deploy_config():
 
 
 ################################################################################
-# Pre deploy hooks
+# [PRE] deploy hooks
 ################################################################################
 
 
@@ -34,11 +35,19 @@ def check_lock():
     Aborts deploy if lock file is found
     """
     
+    def run_abort():
+        abort("Another deploy in progress")
+
+
     echo_subtask("Checking `deploy.lock` file presence")
 
     with settings(hide('warnings'), warn_only=True):
         if run('test -f %s' % os.path.join(fetch('deploy_to'), 'deploy.lock')).succeeded:
-            abort("Another deploy in progress")
+            if fetch('ask_unlock_if_locked', default_value=False):
+                if not confirm('Deploy lockfile exists. Continue?'): 
+                    run_abort()
+            else:
+                run_abort()
 
 
 def lock():
@@ -71,7 +80,7 @@ def create_build_path():
         build_path = fetch('build_to')
 
         if run('test -d %s' % build_path).failed:
-            run('mkdir -p %s' % build_path)
+            create_entity(build_path, entity_type='directory', protected=False)
 
 
 def discover_latest_release():
@@ -89,8 +98,7 @@ def discover_latest_release():
     with settings(hide('warnings'), warn_only=True):
         if run('test -d %s' % releases_path).failed:
             last_release_number = 0
-            
-            run('mkdir -p %s' % releases_path)
+            create_entity(releases_path, entity_type='directory', protected=False)
         else:
             releases_respond = run('ls -1p %s | sed "s/\///g"' % releases_path)
             releases_dirs = list(filter(lambda x: len(x) != 0, releases_respond.split('\r\n')))
@@ -108,7 +116,7 @@ def discover_latest_release():
 
 
 ################################################################################
-# Deploy
+# [DEPLOY]
 ################################################################################
 
 
@@ -117,38 +125,63 @@ def link_shared_paths():
     Links shared paths to build folder
     """
 
-    ensure('build_to')
-    ensure('shared_path')
-    ensure('shared_dirs')
-    ensure('shared_files')
-
-    echo_subtask("Linking shared paths")
-
-    shared = fetch('shared_path')
+    global build_to
     build_to = fetch('build_to')
 
-    # Shared dirs
-    for sdir in fetch('shared_dirs'):
-        relative_path = os.path.join('./', sdir)
-        directory, filename_ = os.path.split(relative_path)
-        shared_path = os.path.join(shared, sdir)
-    
-        run('cd %s && mkdir -p %s' % (build_to, directory)) # create parent directory
-        run('cd %s && rm -rf %s' % (build_to, relative_path)) # remove directory if it conficts with shared
-        run('cd {0} && ln -s "{1}" "{2}"'.format(build_to, shared_path, relative_path)) # link shared to current folder
+    global shared
+    shared = fetch('shared_path')
 
-    # Shared files
-    for sfile in fetch('shared_files'):
-        shared_path = os.path.join(shared, sfile)
-        relative_path = os.path.join('./', sfile)
-        directory, filename_ = os.path.split(relative_path)
+    def link_dirs(dirs):
+        global shared
+        global build_to
 
-        run('cd %s && mkdir -p %s' % (build_to, directory)) # create parent directory
-        run('cd {0} && ln -sf "{1}" "{2}"'.format(build_to, shared_path, relative_path)) # link shared to current folder
+        for sdir in dirs:
+            relative_path = os.path.join('./', sdir)
+            directory, filename_ = os.path.split(relative_path)
+            shared_path = os.path.join(shared, sdir)
+        
+            with cd(build_to):
+                create_entity(directory, entity_type='directory', protected=False) # create parent directory
+                run('rm -rf %s' % (relative_path)) # remove directory if it conficts with shared
+                run('ln -s "{1}" "{2}"'.format(shared_path, relative_path)) # link shared to current folder
+
+
+    def link_files(files):
+        global shared
+        global build_to
+        
+        for sfile in files:
+            shared_path = os.path.join(shared, sfile)
+            relative_path = os.path.join('./', sfile)
+            directory, filename_ = os.path.split(relative_path)
+
+            with cd(build_to):
+                create_entity(directory, entity_type='directory', protected=False) # create parent directory
+                run('ln -sf "{1}" "{2}"'.format(shared_path, relative_path)) # link shared to current folder
+
+
+    shared_dirs = fetch('shared_dirs', default_value=[])
+    shared_files = fetch('shared_files', default_value=[])
+    any_shared_dir = len(shared_dirs) > 0
+    any_shared_file = len(shared_files) > 0
+
+    protected_shared_dirs = fetch('protected_shared_dirs', default_value=[])
+    protected_shared_files = fetch('protected_shared_files', default_value=[])
+    any_protected_shared_dir = len(protected_shared_dirs) > 0
+    any_protected_shared_file = len(protected_shared_files) > 0
+
+    if any_shared_dir or any_shared_file or any_protected_shared_dir or any_protected_shared_file: 
+        echo_subtask("Linking shared paths")
+
+        if any_shared_dir: link_dirs(shared_dirs)
+        if any_shared_file: link_files(shared_files)
+
+        if any_protected_shared_dir: link_dirs(protected_shared_dirs)
+        if any_protected_shared_file: link_files(protected_shared_files)
 
 
 ################################################################################
-# Post deploy hooks
+# [POST] deploy hooks
 ################################################################################
 
 
@@ -182,7 +215,7 @@ def link_release_to_current():
 
 
 ################################################################################
-# Finalize deploy hooks
+# [FINALIZE] deploy hooks
 ################################################################################
 
 def cleanup_releases():
