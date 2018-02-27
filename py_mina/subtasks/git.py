@@ -29,10 +29,9 @@ def maybe_clone_git_repository():
     ensure('repository')
     ensure('scm')
 
-    echo_subtask('Ensuring git repository presence')
-
     with settings(hide('warnings'), warn_only=True):
         scm_path = fetch('scm')
+        echo_subtask('Ensuring git repository presence')
 
         if run('test -d %s' % scm_path).failed:
             create_entity(scm_path, entity_type='directory', protected=False)
@@ -64,13 +63,12 @@ def use_git_branch():
     Clones repository to build dir
     """
 
-    ensure('build_to')
     ensure('scm')
     ensure('branch')
 
-    echo_subtask("Copying code from repository to build folder")
-
     build_to = fetch('build_to')
+
+    echo_subtask("Copying code from repository to build folder")
 
     run('git clone {0} {1} --recursive --branch {2}'.format(fetch('scm'), build_to, fetch('branch')))
     run('rm -rf %s' % os.path.join(build_to, '.git'))

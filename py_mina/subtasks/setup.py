@@ -35,11 +35,9 @@ def create_required_structure():
     Creates required folders (tmp, releases, shared) in `deploy_to` path
     """
 
-    ensure('deploy_to')
+    deploy_to = fetch('deploy_to')
 
     echo_subtask('Creating required structure')
-
-    deploy_to = fetch('deploy_to')
 
     create_entity(deploy_to, entity_type='directory', protected=False)
 
@@ -85,7 +83,6 @@ def create_shared_paths():
                 )
 
             filepath = os.path.join(shared_path, sfile)
-            
             create_entity(filepath, entity_type='file', protected=protected)
 
             recommendation_tuple = (env.host_string, filepath)

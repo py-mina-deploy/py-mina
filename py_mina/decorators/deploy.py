@@ -23,13 +23,13 @@ def deploy_task(on_success=None):
 
 		wrapped_function_name = wrapped_function.__name__
 
-
 		def _pre_deploy():
 			try:
 				check_lock()
 				lock()
 				create_build_path()
 				discover_latest_release()
+
 				set_state('pre_deploy', True)
 			except Exception as error: 
 				set_state('pre_deploy', error)
@@ -41,6 +41,7 @@ def deploy_task(on_success=None):
 				try:
 					with cd(fetch('build_to')):
 						wrapped_function(*args)
+
 					set_state('deploy', True)
 				except Exception as error: 
 					set_state('deploy', error)
@@ -53,6 +54,7 @@ def deploy_task(on_success=None):
 				try:
 					move_build_to_releases()
 					link_release_to_current()
+
 					set_state('post_deploy', True)
 				except Exception as error: 
 					set_state('post_deploy', error)
@@ -68,6 +70,7 @@ def deploy_task(on_success=None):
 				cleanup_releases()
 				remove_build_path()
 				force_unlock()
+
 				set_state('finalize', True)
 			except Exception as error:
 				set_state('finalize', error)
@@ -77,6 +80,7 @@ def deploy_task(on_success=None):
 			if  state.get('success') == True and callable(on_success):
 				try: 
 					on_success()
+
 					set_state('on_success', True)
 				except Exception as error:
 					set_state('on_success', error)
@@ -104,13 +108,16 @@ def deploy_task(on_success=None):
 					_pre_deploy()
 					_deploy(*args)
 					_post_deploy()
+
 					set_state('success', True)
 				except Exception as error:
-					echo_comment(('\n[ERROR]\n%s\n' % error), error=True)
 					set_state('success', error)
+					
+					echo_comment(('\n[ERROR]\n%s\n' % error), error=True)
 
 				_finalize_deploy()
 				_on_success_deploy()
+				
 				print_deploy_stats(wrapped_function_name, start_time=start_time)
 
 		

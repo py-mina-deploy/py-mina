@@ -17,7 +17,6 @@ def setup_task(wrapped_function):
 
 	wrapped_function_name = wrapped_function.__name__
 
-
 	def _pre_setup():
 		"""
 		Creates required structure and adds hosts to known hosts
@@ -47,6 +46,7 @@ def setup_task(wrapped_function):
 			try:
 				_pre_setup()
 				wrapped_function(*args)
+
 				print_task_stats(wrapped_function_name, start_time)
 			except Exception as e:
 				print_task_stats(wrapped_function_name, start_time, e)

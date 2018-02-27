@@ -88,8 +88,6 @@ def discover_latest_release():
     Connects to remote server and discovers next release number
     """
 
-    ensure('releases_path')
-
     releases_path = fetch('releases_path')
 
     echo_subtask("Discovering latest release number")
@@ -203,12 +201,11 @@ def link_release_to_current():
     Creates current release symlink in `deploy_to` path
     """
 
-    ensure('release_to')
     ensure('current_path')
 
-    echo_subtask("Linking release to current")
-
     release_to = fetch('release_to')
+
+    echo_subtask("Linking release to current")
 
     with cd(release_to):
         run('ln -nfs %s %s' % (release_to, fetch('current_path')))
@@ -224,7 +221,6 @@ def cleanup_releases():
     """
 
     ensure('releases_path')
-    ensure('keep_releases')
 
     releases_count = str(fetch('keep_releases'))
 
@@ -274,7 +270,6 @@ def rollback_release():
     Rollbacks latest release
     """
     
-    ensure('releases_path')
     ensure('current_path')
 
     releases_path = fetch('releases_path')

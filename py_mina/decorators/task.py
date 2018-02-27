@@ -16,7 +16,6 @@ def task(wrapped_function):
 
 	wrapped_function_name = wrapped_function.__name__
 
-
 	def task_wrapper(*args):
 		"""
 		Runs task and prints stats at the end
