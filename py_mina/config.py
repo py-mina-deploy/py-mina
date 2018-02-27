@@ -20,10 +20,6 @@ config = _AttributeDict({
     'ask_unlock_if_locked': False,
     'verbose': False,
     'abort_on_prompts': False,
-    'shared_files': [],
-    'shared_dirs': [],
-    'protected_shared_files': [],
-    'protected_shared_dirs': [],
     'farbric_config_settings': ['user', 'hosts', 'abort_on_prompts']
 })
 

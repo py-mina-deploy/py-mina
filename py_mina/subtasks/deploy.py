@@ -140,8 +140,8 @@ def link_shared_paths():
         
             with cd(build_to):
                 create_entity(directory, entity_type='directory', protected=False) # create parent directory
-                run('rm -rf %s' % (relative_path)) # remove directory if it conficts with shared
-                run('ln -s "{1}" "{2}"'.format(shared_path, relative_path)) # link shared to current folder
+                run('rm -rf %s' % relative_path) # remove directory if it conficts with shared
+                run('ln -s %s %s' % (shared_path, relative_path)) # link shared to current folder
 
 
     def link_files(files):
@@ -155,7 +155,7 @@ def link_shared_paths():
 
             with cd(build_to):
                 create_entity(directory, entity_type='directory', protected=False) # create parent directory
-                run('ln -sf "{1}" "{2}"'.format(shared_path, relative_path)) # link shared to current folder
+                run('ln -sf %s %s' % (shared_path, relative_path)) # link shared to current folder
 
 
     shared_dirs = fetch('shared_dirs', default_value=[])
@@ -239,8 +239,6 @@ def remove_build_path():
     """
     Removes a temporary build dir
     """
-
-    ensure('deploy_to')
     
     echo_subtask("Removing build path")
 
