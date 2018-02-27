@@ -27,10 +27,10 @@ def maybe_clone_git_repository():
     """
 
     ensure('repository')
-    ensure('scm')
+
+    scm_path = fetch('scm')
 
     with settings(hide('warnings'), warn_only=True):
-        scm_path = fetch('scm')
         echo_subtask('Ensuring git repository presence')
 
         if run('test -d %s' % scm_path).failed:

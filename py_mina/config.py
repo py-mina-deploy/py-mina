@@ -35,7 +35,8 @@ config = _AttributeDict({
 
 def ensure(key):
     """
-    Ensures presence of config setting
+    Ensures presence of config setting. Prevents from running unnecessary commands,
+    before discovering, that config setting is not set
     """
 
     if not key in config.keys():
@@ -58,7 +59,7 @@ def fetch(key, default_value=None):
 
 def set(key, value):
     """
-    Sets config setting
+    Sets config setting (updates `fabric3` config if necessary)
     """
 
     if key in config.get('farbric_config_settings'):
