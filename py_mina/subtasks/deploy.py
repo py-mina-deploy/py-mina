@@ -136,7 +136,7 @@ def link_shared_paths():
         for sdir in dirs:
             relative_path = os.path.join('./', sdir)
             directory, filename_ = os.path.split(relative_path)
-            shared_path = os.path.join(shared, sdir)
+            shared_path = '/'.join([shared, sdir])
         
             with cd(build_to):
                 create_entity(directory, entity_type='directory', protected=False) # create parent directory
@@ -149,9 +149,9 @@ def link_shared_paths():
         global build_to
         
         for sfile in files:
-            shared_path = '/'.join([shared, sfile])
             relative_path = os.path.join('./', sfile)
             directory, filename_ = os.path.split(relative_path)
+            shared_path = '/'.join([shared, sfile])
 
             with cd(build_to):
                 create_entity(directory, entity_type='directory', protected=False) # create parent directory
