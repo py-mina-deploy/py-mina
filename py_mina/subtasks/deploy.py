@@ -149,7 +149,7 @@ def link_shared_paths():
         global build_to
         
         for sfile in files:
-            shared_path = os.path.join(shared, sfile)
+            shared_path = '/'.join([shared, sfile])
             relative_path = os.path.join('./', sfile)
             directory, filename_ = os.path.split(relative_path)
 
