@@ -1,7 +1,10 @@
+# 0.1.18
+
+* fix typo
+
 # 0.1.13 - 0.1.17
 
 * fix `os.path.join` when deploying from Windows to Linux distro
-
 
 # 0.1.11
 

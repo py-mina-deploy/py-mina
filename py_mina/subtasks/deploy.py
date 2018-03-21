@@ -42,7 +42,7 @@ def check_lock():
     echo_subtask("Checking `deploy.lock` file presence")
 
     with settings(hide('warnings'), warn_only=True):
-        if run('test -f %s' % '/'.join([fetch('deploy_to'), 'deploy.lock')]).succeeded:
+        if run('test -f %s' % '/'.join([fetch('deploy_to'), 'deploy.lock'])).succeeded:
             if fetch('ask_unlock_if_locked', default_value=False):
                 if not confirm('Deploy lockfile exists. Continue?'): 
                     run_abort()
@@ -255,7 +255,7 @@ def force_unlock():
 
     echo_subtask("Removing `deploy.lock` file")
 
-    run('rm -f %s' % '/'.join([fetch('deploy_to'), 'deploy.lock')])
+    run('rm -f %s' % '/'.join([fetch('deploy_to'), 'deploy.lock']))
 
 
 ################################################################################
