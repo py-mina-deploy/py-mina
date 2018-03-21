@@ -110,7 +110,7 @@ def discover_latest_release():
 
     # Set release info to config 
     set('release_number', release_number)
-    set('release_to', os.path.join(releases_path, str(release_number)))
+    set('release_to', '/'.join([releases_path, str(release_number)]))
 
 
 ################################################################################

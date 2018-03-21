@@ -64,11 +64,11 @@ def set(key, value):
     elif key == 'deploy_to':
         config.update({
             'deploy_to': value, 
-            'scm': os.path.join(value, 'scm'), 
-            'shared_path': os.path.join(value, 'shared'), 
-            'current_path': os.path.join(value, 'current'), 
-            'releases_path': os.path.join(value, 'releases'), 
-            'build_to': os.path.join(value, 'tmp', 'build-' + str(time.time())),
+            'scm': '/'.join([value, 'scm']), 
+            'shared_path': '/'.join([value, 'shared']), 
+            'current_path': '/'.join([value, 'current']), 
+            'releases_path': '/'.join([value, 'releases']), 
+            'build_to': '/'.join([value, 'tmp', 'build-' + str(time.time())]),
         })
     else:
         config.update({ key: value })
