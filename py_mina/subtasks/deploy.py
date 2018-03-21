@@ -243,7 +243,7 @@ def remove_build_path():
     echo_subtask("Removing build path")
 
     with settings(hide('stdout', 'warnings'), warn_only=True):
-        builds_path = '/'.join(fetch('deploy_to'), 'tmp', 'build-*')
+        builds_path = '/'.join([fetch('deploy_to'), 'tmp', 'build-*'])
 
         run('rm -rf %s' % builds_path)
 
