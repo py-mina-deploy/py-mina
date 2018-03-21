@@ -42,7 +42,7 @@ def check_lock():
     echo_subtask("Checking `deploy.lock` file presence")
 
     with settings(hide('warnings'), warn_only=True):
-        if run('test -f %s' % os.path.join(fetch('deploy_to'), 'deploy.lock')).succeeded:
+        if run('test -f %s' % '/'.join([fetch('deploy_to'), 'deploy.lock')]).succeeded:
             if fetch('ask_unlock_if_locked', default_value=False):
                 if not confirm('Deploy lockfile exists. Continue?'): 
                     run_abort()
@@ -60,7 +60,7 @@ def lock():
 
     echo_subtask("Creating `deploy.lock` file")
 
-    run('touch %s' % os.path.join(fetch('deploy_to'), 'deploy.lock'))
+    run('touch %s' % '/'.join([fetch('deploy_to'), 'deploy.lock']))
 
 
 def create_build_path():
@@ -134,7 +134,7 @@ def link_shared_paths():
         global build_to
 
         for sdir in dirs:
-            relative_path = os.path.join('./', sdir)
+            relative_path = '/'.join(['.', sdir])
             directory, filename_ = os.path.split(relative_path)
             shared_path = '/'.join([shared, sdir])
         
@@ -149,7 +149,7 @@ def link_shared_paths():
         global build_to
         
         for sfile in files:
-            relative_path = os.path.join('./', sfile)
+            relative_path = '/'.join(['.', sfile])
             directory, filename_ = os.path.split(relative_path)
             shared_path = '/'.join([shared, sfile])
 
@@ -243,7 +243,7 @@ def remove_build_path():
     echo_subtask("Removing build path")
 
     with settings(hide('stdout', 'warnings'), warn_only=True):
-        builds_path = os.path.join(fetch('deploy_to'), 'tmp', 'build-*')
+        builds_path = '/'.join(fetch('deploy_to'), 'tmp', 'build-*')
 
         run('rm -rf %s' % builds_path)
 
@@ -255,7 +255,7 @@ def force_unlock():
 
     echo_subtask("Removing `deploy.lock` file")
 
-    run('rm -f %s' % os.path.join(fetch('deploy_to'), 'deploy.lock'))
+    run('rm -f %s' % '/'.join([fetch('deploy_to'), 'deploy.lock')])
 
 
 ################################################################################

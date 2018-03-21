@@ -43,7 +43,7 @@ def create_required_structure():
 
     for required_path in ['shared', 'releases', 'tmp']:
         create_entity(
-            os.path.join(deploy_to, required_path), 
+            '/'.join([deploy_to, required_path]), 
             entity_type='directory', 
             protected=False
         )
@@ -63,7 +63,7 @@ def create_shared_paths():
 
         for sdir in directories:
             create_entity(
-                os.path.join(shared_path, sdir), 
+                '/'.join([shared_path, sdir]), 
                 entity_type='directory', 
                 protected=protected
             )
@@ -77,12 +77,12 @@ def create_shared_paths():
 
             if directory: 
                 create_entity(
-                    os.path.join(shared_path, directory), 
+                    '/'.join([shared_path, directory]), 
                     entity_type='directory', 
                     protected=protected
                 )
 
-            filepath = os.path.join(shared_path, sfile)
+            filepath = '/'.join([shared_path, sfile])
             create_entity(filepath, entity_type='file', protected=protected)
 
             recommendation_tuple = (env.host_string, filepath)

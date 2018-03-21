@@ -36,7 +36,7 @@ def maybe_clone_git_repository():
         if run('test -d %s' % scm_path).failed:
             create_entity(scm_path, entity_type='directory', protected=False)
 
-        if run('test -f %s' % os.path.join(scm_path, 'HEAD')).failed:
+        if run('test -f %s' % '/'.join([scm_path, 'HEAD'])).failed:
             echo_subtask("Cloning bare git repository")
 
             with settings(hide('output')):
@@ -71,5 +71,5 @@ def use_git_branch():
     echo_subtask("Copying code from repository to build folder")
 
     run('git clone {0} {1} --recursive --branch {2}'.format(fetch('scm'), build_to, fetch('branch')))
-    run('rm -rf %s' % os.path.join(build_to, '.git'))
+    run('rm -rf %s' % '/'.join([build_to, '.git']))
 
