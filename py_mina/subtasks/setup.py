@@ -111,7 +111,7 @@ def create_entity(entity_path, entity_type = 'file', protected=False):
         """
 
         run('chmod u+rwx,g+rx,o-rwx ' + entity_path)
-        run('chown -R %s:%s %s' % owner_triple)
+        run('chown %s:%s %s' % owner_triple)
 
 
     # 1) Create file/directory
