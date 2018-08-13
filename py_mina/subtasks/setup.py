@@ -109,11 +109,11 @@ def create_entity(entity_path, entity_type = 'file', protected=False):
         """
         Changes unix owner/mode
         """
-        chmod_command = sudo if fetch('sudo_on_chmod') else run
-        chown_command = sudo if fetch('sudo_on_chown') else run
+        chmod_sudo = 'sudo ' if fetch('sudo_on_chmod') else ''
+        chown_sudo = 'sudo ' if fetch('sudo_on_chown') else ''
 
-        chmod_command('chmod u+rwx,g+rx,o-rwx ' + entity_path)
-        chown_command('chown %s:%s %s' % owner_triple)
+        run(chmod_sudo + 'chmod u+rwx,g+rx,o-rwx ' + entity_path)
+        run(chown_sudo + 'chown %s:%s %s' % owner_triple)
 
 
     # 1) Create file/directory
