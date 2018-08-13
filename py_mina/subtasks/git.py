@@ -5,7 +5,7 @@ Git tasks
 
 from __future__ import with_statement
 import os
-from fabric.api import settings, hide, run, cd
+from fabric.api import settings, hide, run, cd, settings
 from py_mina.echo import echo_subtask, echo_task
 from py_mina.config import fetch, ensure
 from py_mina.subtasks.setup import create_entity
@@ -71,5 +71,7 @@ def use_git_branch():
     echo_subtask("Copying code from repository to build folder")
 
     run('git clone {0} {1} --recursive --branch {2}'.format(fetch('scm'), build_to, fetch('branch')))
-    run('rm -rf %s' % '/'.join([build_to, '.git']))
+
+    with settings(warn_only=True):
+        run('rm -rf %s' % '/'.join([build_to, '.git']))
 

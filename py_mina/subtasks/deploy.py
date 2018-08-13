@@ -60,7 +60,11 @@ def lock():
 
     echo_subtask("Creating `deploy.lock` file")
 
-    run('touch %s' % '/'.join([fetch('deploy_to'), 'deploy.lock']))
+    create_entity(
+        '/'.join([fetch('deploy_to'), 'deploy.lock'])
+        , entity_type='file', 
+        protected=False
+    )
 
 
 def create_build_path():
