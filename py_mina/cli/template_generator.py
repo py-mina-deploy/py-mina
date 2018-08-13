@@ -28,6 +28,8 @@ def generate_settings_global(staged=False):
 
 set('verbose', True)
 set('keep_releases', 5)
+#set('sudo_on_chown', True)
+#set('sudo_on_chmod', True)
 #set('ask_unlock_if_locked', True)'''.format(staged_import)
 
 

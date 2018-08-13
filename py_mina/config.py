@@ -20,6 +20,8 @@ config = _AttributeDict({
     'ask_unlock_if_locked': False,
     'verbose': False,
     'abort_on_prompts': False,
+    'sudo_on_chown': False,
+    'sudo_on_chmod': False,
     'farbric_config_settings': ['user', 'hosts', 'abort_on_prompts']
 })
 

@@ -13,6 +13,8 @@
 | owner_group | string | &`user` | Global access owner. CANT access files of protected owner |
 | protected_owner_user | string | &`user` | Protected shared files owner. CAN access files of owner |
 | protected_owner_group | string | &`user` | Protected shared files owner. CAN access files of owner |
+| sudo_on_chmod | bool | False | Use `sudo` when changing access mode of files |
+| sudo_on_chown | bool | False | Use `sudo` when changing owner of files |
 | verbose | bool | False | Enables verbose mode |
 | abort_on_prompts | bool | True | Aborts execution if prompt occured |
 

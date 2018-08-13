@@ -8,7 +8,7 @@ import timeit
 import os
 import re
 from py_mina.config import fetch, ensure, check_config
-from fabric.api import run, settings, env, cd, hide
+from fabric.api import run, sudo, settings, env, cd, hide
 from py_mina.echo import *
 
 
@@ -109,9 +109,11 @@ def create_entity(entity_path, entity_type = 'file', protected=False):
         """
         Changes unix owner/mode
         """
+        chmod_command = sudo if fetch('sudo_on_chmod') else run
+        chown_command = sudo if fetch('sudo_on_chown') else run
 
-        run('chmod u+rwx,g+rx,o-rwx ' + entity_path)
-        run('chown %s:%s %s' % owner_triple)
+        chmod_command('chmod u+rwx,g+rx,o-rwx ' + entity_path)
+        chown_command('chown %s:%s %s' % owner_triple)
 
 
     # 1) Create file/directory
