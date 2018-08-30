@@ -113,7 +113,7 @@ def create_entity(entity_path, entity_type = 'file', protected=False):
         Changes unix owner/mode
         """
 
-        run(chmod_sudo + 'chmod ug+rwx,o-rwx ' + entity_path)
+        run(chmod_sudo + 'chmod 0755 ' + entity_path)
         run(chown_sudo + 'chown %s:%s %s' % owner_triple)
 
 
@@ -138,7 +138,7 @@ def create_entity(entity_path, entity_type = 'file', protected=False):
         if owner_user != False and owner_group != False: 
             change_owner((owner_user, owner_group, entity_path))
         else:
-            run(chmod_sudo + 'chmod ug+rwx,o-rwx ' + entity_path)
+            run(chmod_sudo + 'chmod 0755 ' + entity_path)
 
 
 ################################################################################
