@@ -1,3 +1,7 @@
+# 0.2.5
+
+* dont delete old releases when `keep_releases` is set to -1
+
 # 0.1.18/19
 
 * fix typo

@@ -225,8 +225,12 @@ def cleanup_releases():
     """
 
     ensure('releases_path')
+    ensure('keep_releases')
 
     releases_count = str(fetch('keep_releases'))
+
+    if (releases_count == "-1"): 
+        return
 
     echo_subtask("Cleaning up old realeses. Keeping latest %s" % releases_count)
 
