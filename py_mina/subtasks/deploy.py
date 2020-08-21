@@ -144,7 +144,7 @@ def link_shared_paths():
         
             with cd(build_to):
                 create_entity(directory, entity_type='directory', protected=False) # create parent directory
-                run('rm -rf %s' % relative_path) # remove directory if it conficts with shared
+                # run('rm -rf %s' % relative_path) # remove directory if it conficts with shared
                 run('ln -s %s %s' % (shared_path, relative_path)) # link shared to current folder
 
 
