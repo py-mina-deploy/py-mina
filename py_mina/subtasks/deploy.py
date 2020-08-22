@@ -159,6 +159,8 @@ def link_shared_paths():
 
             with cd(build_to):
                 # create_entity(directory, entity_type='directory', protected=False) # create parent directory
+                run("pwd")
+                run("test -f %s" % (relative_path))
                 run('ln -sf %s %s' % (shared_path, relative_path)) # link shared to current folder
 
 
