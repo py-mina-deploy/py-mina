@@ -12,6 +12,7 @@ from py_mina.state import state
 from py_mina.echo import *
 from py_mina.subtasks.setup import create_entity
 
+
 ################################################################################
 # Config
 ################################################################################
@@ -34,17 +35,16 @@ def check_lock():
     """
     Aborts deploy if lock file is found
     """
-    
+
     def run_abort():
         abort("Another deploy in progress")
-
 
     echo_subtask("Checking `deploy.lock` file presence")
 
     with settings(hide('warnings'), warn_only=True):
         if run('test -f %s' % '/'.join([fetch('deploy_to'), 'deploy.lock'])).succeeded:
             if fetch('ask_unlock_if_locked', default_value=False):
-                if not confirm('Deploy lockfile exists. Continue?'): 
+                if not confirm('Deploy lockfile exists. Continue?'):
                     run_abort()
             else:
                 run_abort()
@@ -62,7 +62,7 @@ def lock():
 
     create_entity(
         '/'.join([fetch('deploy_to'), 'deploy.lock'])
-        , entity_type='file', 
+        , entity_type='file',
         protected=False
     )
 
@@ -75,7 +75,7 @@ def create_build_path():
         * deleted -> if build fails
         * moved to releases -> if build succeeds
     """
-    
+
     ensure('build_to')
 
     echo_subtask("Creating build path")
@@ -141,17 +141,16 @@ def link_shared_paths():
             relative_path = '/'.join(['.', sdir])
             directory, filename_ = os.path.split(relative_path)
             shared_path = '/'.join([shared, sdir])
-        
-            with cd(build_to):
-                create_entity(directory, entity_type='directory', protected=False) # create parent directory
-                run('rm -rf %s' % relative_path) # remove directory if it conficts with shared
-                run('ln -s %s %s' % (shared_path, relative_path)) # link shared to current folder
 
+            with cd(build_to):
+                create_entity(directory, entity_type='directory', protected=False)  # create parent directory
+                run('rm -rf %s' % relative_path)  # remove directory if it conficts with shared
+                run('ln -s %s %s' % (shared_path, relative_path))  # link shared to current folder
 
     def link_files(files):
         global shared
         global build_to
-        
+
         for sfile in files:
             relative_path = '/'.join(['.', sfile])
             directory, filename_ = os.path.split(relative_path)
@@ -160,9 +159,10 @@ def link_shared_paths():
             with cd(build_to):
                 # create_entity(directory, entity_type='directory', protected=False) # create parent directory
                 run("pwd")
-                run("test -f %s" % (relative_path))
-                run('ln -sf %s %s' % (shared_path, relative_path)) # link shared to current folder
+                if run("test -f %s" % relative_path).failed:
+                    run("have no file in %s" % relative_path)
 
+                run('ln -sf %s %s' % (shared_path, relative_path))  # link shared to current folder
 
     shared_dirs = fetch('shared_dirs', default_value=[])
     shared_files = fetch('shared_files', default_value=[])
@@ -174,7 +174,7 @@ def link_shared_paths():
     any_protected_shared_dir = len(protected_shared_dirs) > 0
     any_protected_shared_file = len(protected_shared_files) > 0
 
-    if any_shared_dir or any_shared_file or any_protected_shared_dir or any_protected_shared_file: 
+    if any_shared_dir or any_shared_file or any_protected_shared_dir or any_protected_shared_file:
         echo_subtask("Linking shared paths")
 
         if any_shared_dir: link_dirs(shared_dirs)
@@ -231,7 +231,7 @@ def cleanup_releases():
 
     releases_count = str(fetch('keep_releases'))
 
-    if (releases_count == "-1"): 
+    if (releases_count == "-1"):
         return
 
     echo_subtask("Cleaning up old realeses. Keeping latest %s" % releases_count)
@@ -249,7 +249,7 @@ def remove_build_path():
     """
     Removes a temporary build dir
     """
-    
+
     echo_subtask("Removing build path")
 
     with settings(hide('stdout', 'warnings'), warn_only=True):
@@ -277,7 +277,7 @@ def rollback_release():
     """
     Rollbacks latest release
     """
-    
+
     ensure('current_path')
 
     releases_path = fetch('releases_path')
@@ -311,7 +311,7 @@ def rollback_release():
 def get_error_states():
     def find_error_states(x):
         if x == 'success': return False
-        
+
         return state.get(x) not in [True, None]
 
     return list(filter(find_error_states, state.keys()))
