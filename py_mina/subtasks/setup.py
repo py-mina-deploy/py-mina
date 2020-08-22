@@ -73,20 +73,22 @@ def create_shared_paths():
         global shared_path
 
         for sfile in files:
-            directory, filename_ = os.path.split(sfile)
-
-            if directory: 
-                create_entity(
-                    '/'.join([shared_path, directory]), 
-                    entity_type='directory', 
-                    protected=protected
-                )
-
             filepath = '/'.join([shared_path, sfile])
+            os.system("mkdir -p {}".format(filepath))
+            # directory, filename_ = os.path.split(sfile)
+
+            # if directory:
+            #     create_entity(
+            #         '/'.join([shared_path, directory]),
+            #         entity_type='directory',
+            #         protected=protected
+            #     )
+
+            # filepath = '/'.join([shared_path, sfile])
             # create_entity(filepath, entity_type='file', protected=protected)
 
-            recommendation_tuple = (env.host_string, filepath)
-            echo_status('\n=====> Don\'t forget to update shared file:\n[%s] %s\n' % recommendation_tuple, error=True)
+            # recommendation_tuple = (env.host_string, filepath)
+            # echo_status('\n=====> Don\'t forget to update shared file:\n[%s] %s\n' % recommendation_tuple, error=True)
 
 
     echo_subtask('Creating shared paths')
