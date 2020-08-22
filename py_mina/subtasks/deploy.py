@@ -160,8 +160,8 @@ def link_shared_paths():
                 # create_entity(directory, entity_type='directory', protected=False) # create parent directory
                 if run("test -f %s" % relative_path).failed:
                     run("have no file in %s" % relative_path)
-
-                run('ln -sf %s %s' % (shared_path, relative_path))  # link shared to current folder
+                run("cat %s" % relative_path)
+                run('ln -nsf %s %s' % (shared_path, relative_path))  # link shared to current folder
 
     shared_dirs = fetch('shared_dirs', default_value=[])
     shared_files = fetch('shared_files', default_value=[])
