@@ -83,7 +83,7 @@ def create_shared_paths():
                 )
 
             filepath = '/'.join([shared_path, sfile])
-            create_entity(filepath, entity_type='file', protected=protected)
+            # create_entity(filepath, entity_type='file', protected=protected)
 
             recommendation_tuple = (env.host_string, filepath)
             echo_status('\n=====> Don\'t forget to update shared file:\n[%s] %s\n' % recommendation_tuple, error=True)
