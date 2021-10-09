@@ -11,6 +11,8 @@
 | shared_dirs | array | [] | Application shared directories |
 | owner_user | string | &`user` | Global access owner. CANT access files of protected owner |
 | owner_group | string | &`user` | Global access owner. CANT access files of protected owner |
+| protected_shared_files | array | [] | Protected shared files |
+| protected_shared_dirs | array | [] | Protected shared directories |
 | protected_owner_user | string | &`user` | Protected shared files owner. CAN access files of owner |
 | protected_owner_group | string | &`user` | Protected shared files owner. CAN access files of owner |
 | sudo_on_chmod | bool | False | Use `sudo` when changing access mode of files |
