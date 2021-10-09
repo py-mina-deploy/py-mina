@@ -22,6 +22,7 @@ config = _AttributeDict({
     'abort_on_prompts': False,
     'sudo_on_chown': False,
     'sudo_on_chmod': False,
+    'sudo_on_cleanup_releases': False,
     'farbric_config_settings': ['user', 'hosts', 'abort_on_prompts']
 })
 

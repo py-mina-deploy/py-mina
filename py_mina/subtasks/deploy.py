@@ -235,12 +235,12 @@ def cleanup_releases():
     echo_subtask("Cleaning up old realeses. Keeping latest %s" % releases_count)
 
     with cd(fetch('releases_path')), show('debug'):
+        use_sudo = 'sudo' if fetch('sudo_on_cleanup_releases') else ''
         cmd = '''
 count=$(ls -A1 | sort -rn | wc -l)
 remove=$((count > %s ? count - %s : 0))
-ls -A1 | sort -rn | tail -n $remove | xargs rm -rf {}'''
-
-        run(cmd % (releases_count, releases_count))
+ls -A1 | sort -rn | tail -n $remove | xargs %s rm -rf {}'''
+        run(cmd % (releases_count, releases_count, use_sudo))
 
 
 def remove_build_path():
