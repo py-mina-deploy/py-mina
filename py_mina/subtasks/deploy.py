@@ -22,7 +22,7 @@ def check_deploy_config():
     Check required config settings for deploy task
     """
 
-    check_config(['user', 'hosts', 'deploy_to', 'repository', 'branch'])
+    check_config(['user', 'hosts', 'deploy_to'])
 
 
 ################################################################################
