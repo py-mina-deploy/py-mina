@@ -8,7 +8,7 @@ except IOError:
 
 setup(
     name="py_mina",
-    version="0.2.6",
+    version="0.2.7",
     description="Python library for deploying applications on remote server",
     long_description=long_description,
     license="MIT",
@@ -22,11 +22,11 @@ setup(
         ]
     },
     install_requires=[
-		'fabric3',
+		'fabric',
     ],
     classifiers=[
         "Programming Language :: Python",
         "Programming Language :: Python :: 2.7",
-        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.4",
     ]
 )
